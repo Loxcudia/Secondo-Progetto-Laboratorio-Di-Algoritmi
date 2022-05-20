@@ -1,0 +1,37 @@
+Struct del grafo:
+{
+    int nv; //numero vertici
+    int *stazioni; //array con 0 e 1 per indicare quali città hanno stazioni
+    int *aereoporti; //array con 0 e 1 per indicare quali città hanno aereoporti
+    char **nomiCittà; //array di stringhe per memorizzare le città
+    t_arco **adjStazioni; //lista di adiacenza delle stazioni;
+    t_arco **adjAereoporti; //lista di adiacenza degli aereoporti;
+}
+
+Struct archi:
+{
+    int key;
+    int costo;
+    int distanza;
+    struct t_arco *next;
+}
+
+array di grafi per le singole città, ogni grafo ha la sua lista di adiacenza dove adj[0] è sempre la stazione e adj[1] è l'aereoporto, i successivi vertici sono gli alberghi
+
+grafo singola città
+{
+    int nv;
+    char **alberghi; //nomi degli alberghi
+    t_luogo **adj; //lista di adiacenza dei posti in città, ossia aereoporto, stazione e alberghi
+}
+
+t_luogo{
+    int key;
+    struct t_luogo *next;
+}
+
+coda/lista per memorizzare al momento del login dell'admin per le richieste di mete
+abr degli utenti se usiamo un saldo, altrimenti solo lettura del file
+
+
+
