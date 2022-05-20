@@ -1,0 +1,111 @@
+void registrazioneUtente()
+{
+    FILE *utenti;
+    char username[USERNAME_LENGTH];
+    char password[PASSWORD_LENGTH];
+    char password_conferma[PASSWORD_LENGTH];
+    double saldo = 0.0;
+
+
+    printf("\n\n\tREGISTRAZIONE");
+
+    printf("\n\n-> Inserire l'username(MAX %d caratteri): ", USERNAME_LENGTH);
+    scanf("%s", username);
+    clearBuffer();
+
+
+        printf("\n-> Inserire la password(MAX %d caratteri): ", PASSWORD_LENGTH);
+        scanf("%s", password);
+        clearBuffer();
+
+        printf("\n-> Conferma la password: ");
+        scanf("%s", password_conferma);
+        clearBuffer();
+
+        if(strcmp(password, password_conferma)!= 0){
+            printf("\nLe password non corrispondono");
+            return;
+		}
+
+    utenti = fopen("utenti.txt", "a");
+    fprintf(utenti, "%s %s %lf\n", username, password, saldo);
+    fclose(utenti);
+
+    printf("\nUtente \"%s\" registrato", username);
+}
+
+----------
+
+int loginUtente(t_utente **utente)
+{
+    FILE *utenti;
+    char username[USERNAME_LENGTH+1];
+    char password[PASSWORD_LENGTH+1];
+    double saldo;
+    int trovato = 0;
+
+    *utente = (t_utente*)malloc(sizeof(t_utente));
+
+    printf("\n\n\tLOGIN");
+
+        printf("\n\n-> Inserire l'username: ");
+        scanf("%s", (*utente)->username);
+        clearBuffer();
+
+        printf("\n-> Inserire la password: ");
+        scanf("%s", (*utente)->password);
+        clearBuffer();
+
+        utenti = fopen("utenti.txt", "r");
+
+        while(fscanf(utenti, "%s %s %lf", username, password, &saldo)!=EOF)
+        {
+            if((strcmp((*utente)->username, username) == 0) && (strcmp((*utente)->password, password) == 0))
+            {
+                trovato = 1;
+                break;
+            }
+        }
+
+        if(trovato == 1)
+        {
+            (*utente)->saldo = saldo;
+			fclose(utenti);
+            return 1;
+        }
+		else
+        {
+			printf("\nCombinazione non valida");
+			fclose(utenti);
+			return 0;
+		}
+}
+
+----------
+
+int loginAmministratore()
+{
+    char username[USERNAME_LENGTH];
+    char password[PASSWORD_LENGTH];
+    int login = 0;
+
+    printf("\n\n\tLOGIN AMMINISTRAZIONE");
+
+        printf("\n\n-> Inserire l'username: ");
+        scanf("%s", username);
+        clearBuffer();
+
+        printf("\n-> Inserire la password: ");
+        scanf("%s", password);
+        clearBuffer();
+
+        if((strcmp(username, "admin\0") == 0) && (strcmp(password, "root\0") == 0))
+            return 1;
+        else
+        {
+            printf("\nCombinazione non valida");
+            return 0;
+		}
+
+}
+
