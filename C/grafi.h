@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #ifndef GRAFI_H
 #define GRAFI_H
 

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
+#include <limits.h>
 #include "grafi.h"
+#include "liste.h"
 
 t_grafoP* creaGrafoPrincipale(int n)
 {
@@ -91,3 +93,80 @@ void stampaGrafoPrincipale(t_grafoP* G)
 		}
 	}
 }
+
+/*
+void dijkstraGraphPesatoLista(t_grafoP *G, int s)
+{
+    int *d;
+    int *pi;
+    int i, u;
+    t_lista *lista = NULL;
+    t_arcoP *e;
+
+    d = (int*)calloc(sizeof(int), G->nv);
+    pi = (int*)calloc(sizeof(int), G->nv);
+
+    for(i=0; i<G->nv; i++)
+    {
+        d[i] = UINT_MAX;
+        pi[i] = -1;
+    }
+
+    d[s] = 0;
+
+    for(i=0; i<G->nv; i++)
+        inserimentoInTesta(&lista, i);
+
+    while(lista != NULL)
+    {
+        u = estraiMinimo(&lista, d);
+        e = G->adj[u];
+
+        while(e!=NULL)
+        {
+            if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->weight)
+            {
+                pi[e->key] = u;
+                d[e->key] = d[u] + e->weight;
+            }
+            e = e->next;
+        }
+    }
+
+    for(i=0; i<G->nv; i++)
+        printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+
+    return;
+}
+
+int estraiMinimo(t_lista **lista, int *d)
+{
+    t_lista *p, *pmin, *prec = NULL, *precmin = NULL;
+    int u;
+
+    pmin = *lista;
+    p = *lista;
+
+    while(p!=NULL)
+    {
+        if((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX)
+        {
+            pmin = p;
+            precmin = prec;
+        }
+        prec = p;
+        p = p->next;
+    }
+    u = pmin->data;
+
+    if(precmin == NULL)
+        *lista = (*lista)->next;
+    else
+        precmin->next = pmin->next;
+
+    free(pmin);
+
+    return u;
+}
+*/
+
