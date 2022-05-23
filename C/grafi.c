@@ -1,7 +1,212 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h> 
 #include "grafi.h"
+#include "liste.h"
+
+
+void aggiungiArcoGrafoPrincipale(t_grafoP *G, int u, int v, int costo, int distanza, int mode)
+{
+	 t_arcoP *nuovo, *e;
+
+	//manca il check del grafo non inizializzato
+
+    if(u<0 || u>G->nv-1 || v<0 || v>G->nv-1)
+    {
+        printf("\nArco non aggiunto, vertici richiesti invalidi(valori validi: 0 a %d)", G->nv-1);
+        return;
+    }
+
+    if(costo<0)
+    {
+        printf("\nArco non aggiunto, costo invalido");
+        return;
+    }
+    
+    if(distanza<0)
+    {
+        printf("\nArco non aggiunto, costo invalido");
+        return;
+    }
+
+    nuovo = (t_arcoP*)malloc(sizeof(t_arcoP));
+    
+    if(nuovo == NULL)
+        printf("\nAllocazione fallita");
+    else
+    {
+        nuovo->key = v;
+        nuovo->costo = costo;
+        nuovo->distanza = distanza;
+        nuovo->next = NULL;
+		
+		if(mode==0)
+		{
+			if(G->adjAereoporti[u] == NULL)
+	            G->adjAereoporti[u] = nuovo;
+	        else
+	        {
+	            e = G->adjAereoporti[u];
+	            while(e->next!=NULL)
+	            {
+	                if(e->key == nuovo->key)
+	                {
+	                    printf("\nArco gia\' presente");
+	                    free(nuovo);
+	                    return;
+	                }
+	                e = e->next;
+	            	}
+            	e->next = nuovo;
+        	}
+    	}
+    	
+    	if(mode==1)
+    	{
+			if(G->adjStazioni[u] == NULL)
+	            G->adjStazioni[u] = nuovo;
+	        else
+	        {
+	            e = G->adjStazioni[u];
+	            while(e->next!=NULL)
+	            {
+	                if(e->key == nuovo->key)
+	                {
+	                    printf("\nArco gia\' presente");
+	                    free(nuovo);
+	                    return;
+	                }
+	                e = e->next;
+	            	}
+            	e->next = nuovo;
+        	}
+    	}	
+    }
+}
+
+t_grafoP* leggiGrafo()
+{
+	FILE *fileGrafo = NULL;
+	int nv;
+	t_grafoP* G = NULL;
+	int i = 0;
+	int presenza;
+	int v, costo, distanza;
+	
+	fileGrafo = fopen("grafo.txt", "r");
+		
+	if(fileGrafo == NULL)
+		printf("Errore nella lettura del grafo\n");
+	else
+	{
+		fscanf(fileGrafo, "%d", &nv);
+		G = creaGrafoPrincipale(nv);
+		
+		for(i=0; i<nv; i++)
+		{
+			fscanf(fileGrafo, "%d", &presenza);
+			G->aereoporti[i] = presenza;
+		}
+		
+		for(i=0; i<nv; i++)
+		{
+			fscanf(fileGrafo, "%d", &presenza);
+			G->stazioni[i] = presenza;
+		}
+		
+		i = 0;
+		
+		fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+		
+		while(v != -2) //-2 flag per segnalare la fine degli archi di una lista di adiacenza
+		{
+			if(v == -1) //-1 flag per segnalare la fine degli archi di un vertice
+			{
+				i++;
+				continue;
+			}
+			else
+			{
+				aggiungiArcoGrafoPrincipale(G, i, v, costo, distanza, 0); //0 vuol dire aggiungilo alla lista di adiacenza degli aereoporti
+			}
+			
+			fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+		}
+		
+		fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+		
+		while(v != -2)
+		{
+			if(v == -1)
+			{
+				i++;
+				continue;
+			}
+			else
+			{
+				aggiungiArcoGrafoPrincipale(G, i, v, costo, distanza, 1); //1 vuol dire aggiungilo alla lista di adiacenza delle stazioni
+			}
+			
+			fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+		}
+	}
+	
+	fclose(fileGrafo);
+	return G;
+}
+
+void salvaGrafo(t_grafoP *G)
+{
+	FILE *fileGrafo = NULL;
+	int i;
+	t_arcoP *a;
+	
+	fileGrafo = fopen("grafo.txt", "w");
+	
+	if(fileGrafo == NULL)
+	{
+		printf("Errore nell\'apertura del file per il salvataggio del grafo\n");
+		return;
+	}
+
+	fprintf(fileGrafo, "%d\n", G->nv);
+	
+	for(i=0; i<G->nv; i++)
+		fprintf(fileGrafo, "%d ", G->aereoporti[i]);
+	printf("\n");
+	
+	for(i=0; i<G->nv; i++)
+		fprintf(fileGrafo, "%d ", G->stazioni[i]);
+	printf("\n");
+	
+	for(i=0; i<G->nv; i++)
+	{
+		a = G->adjAereoporti[i];
+		
+		while(a!=NULL)
+		{
+			fprintf(fileGrafo, "%d %d %d ", a->key, a->costo, a->distanza);
+			a = a->next;
+		}
+		fprintf(fileGrafo, "%d\n", -1);
+	}
+	fprintf(fileGrafo, "\n%d", -2);
+	
+	for(i=0; i<G->nv; i++)
+	{
+		a = G->adjStazioni[i];
+		
+		while(a!=NULL)
+		{
+			fprintf(fileGrafo, "%d %d %d ", a->key, a->costo, a->distanza);
+			a = a->next;
+		}
+		fprintf(fileGrafo, "%d\n", -1);
+	}
+	fprintf(fileGrafo, "\n%d", -2);
+	
+	fclose(fileGrafo);
+}
 
 t_grafoP* creaGrafoPrincipale(int n)
 {
@@ -179,64 +384,201 @@ void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 	}
 }
 
-/*
-void dijkstraGraphPesatoLista(t_grafoP *G, int s)
+void dijkstraGenerico(t_grafoP *G, int s, int mode)
+{
+	switch(mode){
+		case(0):
+			dijkstraAereoportiCosto(G, s);
+			break;
+			
+		case(1):
+			dijkstraAereoportiDistanza(G, s);
+			break;
+		
+		case(2):
+			dijkstraStazioniCosto(G, s);
+			break;
+			
+		case(3): 
+			dijkstraStazioniDistanza(G, s);
+			break;
+	}
+}
+
+void dijkstraAereoportiCosto(t_grafoP *G, int s)
 {
 	int *d;
 	int *pi;
 	int i, u;
 	t_lista *lista = NULL;
 	t_arcoP *e;
+	
 	d = (int*)calloc(sizeof(int), G->nv);
 	pi = (int*)calloc(sizeof(int), G->nv);
+
 	for(i=0; i<G->nv; i++)
 	{
 		d[i] = UINT_MAX;
 		pi[i] = -1;
 	}
+
 	d[s] = 0;
+
 	for(i=0; i<G->nv; i++)
 		inserimentoInTesta(&lista, i);
+
 	while(lista != NULL)
 	{
 		u = estraiMinimo(&lista, d);
-		e = G->adj[u];
+		e = G->adjAereoporti[u];
+		
 		while(e!=NULL)
 		{
-			if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->weight)
+			if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->costo)
 			{
 				pi[e->key] = u;
-				d[e->key] = d[u] + e->weight;
+				d[e->key] = d[u] + e->costo;
 			}
 			e = e->next;
 		}
 	}
+	
 	for(i=0; i<G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+		
 	return;
 }
-int estraiMinimo(t_lista **lista, int *d)
+
+void dijkstraAereoportiDistanza(t_grafoP *G, int s)
 {
-	t_lista *p, *pmin, *prec = NULL, *precmin = NULL;
-	int u;
-	pmin = *lista;
-	p = *lista;
-	while(p!=NULL)
+	int *d;
+	int *pi;
+	int i, u;
+	t_lista *lista = NULL;
+	t_arcoP *e;
+	
+	d = (int*)calloc(sizeof(int), G->nv);
+	pi = (int*)calloc(sizeof(int), G->nv);
+
+	for(i=0; i<G->nv; i++)
 	{
-		if((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX)
-		{
-			pmin = p;
-			precmin = prec;
-		}
-		prec = p;
-		p = p->next;
+		d[i] = UINT_MAX;
+		pi[i] = -1;
 	}
-	u = pmin->data;
-	if(precmin == NULL)
-		*lista = (*lista)->next;
-	else
-		precmin->next = pmin->next;
-	free(pmin);
-	return u;
+
+	d[s] = 0;
+
+	for(i=0; i<G->nv; i++)
+		inserimentoInTesta(&lista, i);
+
+	while(lista != NULL)
+	{
+		u = estraiMinimo(&lista, d);
+		e = G->adjAereoporti[u];
+		
+		while(e!=NULL)
+		{
+			if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->distanza)
+			{
+				pi[e->key] = u;
+				d[e->key] = d[u] + e->distanza;
+			}
+			e = e->next;
+		}
+	}
+	
+	for(i=0; i<G->nv; i++)
+		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+		
+	return;
 }
-*/
+
+void dijkstraStazioniCosto(t_grafoP *G, int s)
+{
+	int *d;
+	int *pi;
+	int i, u;
+	t_lista *lista = NULL;
+	t_arcoP *e;
+	
+	d = (int*)calloc(sizeof(int), G->nv);
+	pi = (int*)calloc(sizeof(int), G->nv);
+
+	for(i=0; i<G->nv; i++)
+	{
+		d[i] = UINT_MAX;
+		pi[i] = -1;
+	}
+
+	d[s] = 0;
+
+	for(i=0; i<G->nv; i++)
+		inserimentoInTesta(&lista, i);
+
+	while(lista != NULL)
+	{
+		u = estraiMinimo(&lista, d);
+		e = G->adjStazioni[u];
+		
+		while(e!=NULL)
+		{
+			if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->costo)
+			{
+				pi[e->key] = u;
+				d[e->key] = d[u] + e->costo;
+			}
+			e = e->next;
+		}
+	}
+	
+	for(i=0; i<G->nv; i++)
+		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+		
+	return;
+}
+
+void dijkstraStazioniDistaanza(t_grafoP *G, int s)
+{
+	int *d;
+	int *pi;
+	int i, u;
+	t_lista *lista = NULL;
+	t_arcoP *e;
+	
+	d = (int*)calloc(sizeof(int), G->nv);
+	pi = (int*)calloc(sizeof(int), G->nv);
+
+	for(i=0; i<G->nv; i++)
+	{
+		d[i] = UINT_MAX;
+		pi[i] = -1;
+	}
+
+	d[s] = 0;
+
+	for(i=0; i<G->nv; i++)
+		inserimentoInTesta(&lista, i);
+
+	while(lista != NULL)
+	{
+		u = estraiMinimo(&lista, d);
+		e = G->adjStazioni[u];
+		
+		while(e!=NULL)
+		{
+			if(d[e->key] == UINT_MAX || d[e->key] > d[u] + e->distanza)
+			{
+				pi[e->key] = u;
+				d[e->key] = d[u] + e->distanza;
+			}
+			e = e->next;
+		}
+	}
+	
+	for(i=0; i<G->nv; i++)
+		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+		
+	return;
+}
+
+
