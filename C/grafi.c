@@ -4,7 +4,6 @@
 #include "grafi.h"
 #include "liste.h"
 
-
 void aggiungiArcoGrafoPrincipale(t_grafoP *G, int u, int v, int costo, int distanza, int mode)
 {
 	 t_arcoP *nuovo, *e;
@@ -384,26 +383,6 @@ void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 	}
 }
 
-void dijkstraGenerico(t_grafoP *G, int s, int mode)
-{
-	switch(mode){
-		case(0):
-			dijkstraAereoportiCosto(G, s);
-			break;
-			
-		case(1):
-			dijkstraAereoportiDistanza(G, s);
-			break;
-		
-		case(2):
-			dijkstraStazioniCosto(G, s);
-			break;
-			
-		case(3): 
-			dijkstraStazioniDistanza(G, s);
-			break;
-	}
-}
 
 void dijkstraAereoportiCosto(t_grafoP *G, int s)
 {
@@ -537,7 +516,7 @@ void dijkstraStazioniCosto(t_grafoP *G, int s)
 	return;
 }
 
-void dijkstraStazioniDistaanza(t_grafoP *G, int s)
+void dijkstraStazioniDistanza(t_grafoP *G, int s)
 {
 	int *d;
 	int *pi;
@@ -579,6 +558,27 @@ void dijkstraStazioniDistaanza(t_grafoP *G, int s)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
 		
 	return;
+}
+
+void dijkstraGenerico(t_grafoP* G, int s, int mode)
+{
+	switch (mode) {
+	case(0):
+		dijkstraAereoportiCosto(G, s);
+		break;
+
+	case(1):
+		dijkstraAereoportiDistanza(G, s);
+		break;
+
+	case(2):
+		dijkstraStazioniCosto(G, s);
+		break;
+
+	case(3):
+		dijkstraStazioniDistanza(G, s);
+		break;
+	}
 }
 
 

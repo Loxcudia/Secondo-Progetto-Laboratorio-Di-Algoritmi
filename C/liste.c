@@ -10,8 +10,7 @@ void inserimentoInTesta(t_lista **L, int data)
 	
 	tmp = (t_lista*)malloc(sizeof(t_lista));
 	
-	if(tmp == NULL)
-	{
+	if(tmp == NULL) {
 		printf("Allocazione fallita\n");
 		return;
 	}
@@ -19,14 +18,12 @@ void inserimentoInTesta(t_lista **L, int data)
 	tmp->data = data;
 	tmp->next = NULL;
 	
-	if(L == NULL)
-	{
+	if(L == NULL) {
 		*L = tmp;
 	}
-	else
-	{
-		tmp->next = *lista;
-		*lista = tmp;
+	else {
+		tmp->next = *L;
+		*L = tmp;
 	}
 }
 
