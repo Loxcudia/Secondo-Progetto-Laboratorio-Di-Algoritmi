@@ -101,6 +101,9 @@ Utente loginUtente() {
 
 void menuUtente(Utente user) {
 	int scelta;
+    t_grafoP *G;
+
+    G = leggiGrafo();
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
 	while (1) {

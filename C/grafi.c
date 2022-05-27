@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> 
+#include <limits.h>
 #include "grafi.h"
 #include "liste.h"
 
@@ -105,48 +106,63 @@ t_grafoP* leggiGrafo()
 		{
 			fscanf(fileGrafo, "%d", &presenza);
 			G->aereoporti[i] = presenza;
+
+            printf("%d ", presenza);
 		}
 		
+        printf("\n");
+
 		for(i=0; i<nv; i++)
 		{
 			fscanf(fileGrafo, "%d", &presenza);
 			G->stazioni[i] = presenza;
-		}
+
+            printf("%d ", presenza);
+        }
+
+        printf("\n");
 		
 		i = 0;
 		
-		fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
-		
+        fscanf(fileGrafo, "%d", &v);
+
 		while(v != -2) //-2 flag per segnalare la fine degli archi di una lista di adiacenza
 		{
 			if(v == -1) //-1 flag per segnalare la fine degli archi di un vertice
 			{
 				i++;
+                fscanf(fileGrafo, "%d", &v);
 				continue;
 			}
 			else
 			{
+                fscanf(fileGrafo,"%d %d ", &costo, &distanza);
 				aggiungiArcoGrafoPrincipale(G, i, v, costo, distanza, 0); //0 vuol dire aggiungilo alla lista di adiacenza degli aereoporti
 			}
 			
-			fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+            fscanf(fileGrafo, "%d", &v);
 		}
 		
-		fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+        i = 0;
+
+        fscanf(fileGrafo, "%d ", &v);
 		
 		while(v != -2)
 		{
-			if(v == -1)
+            if(v == -1)
 			{
 				i++;
+                fscanf(fileGrafo, "%d", &v);
 				continue;
 			}
 			else
 			{
+
+                fscanf(fileGrafo, "%d %d ", &costo, &distanza);
 				aggiungiArcoGrafoPrincipale(G, i, v, costo, distanza, 1); //1 vuol dire aggiungilo alla lista di adiacenza delle stazioni
 			}
 			
-			fscanf(fileGrafo, "%d %d %d ", &v, &costo, &distanza);
+            fscanf(fileGrafo, "%d ", &v);
 		}
 	}
 	
