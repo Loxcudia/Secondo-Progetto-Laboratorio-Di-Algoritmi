@@ -45,7 +45,7 @@ void aggiungiArcoGrafoCitta(t_grafoC *G, int i, int key);
 t_grafoP* leggiGrafo();
 t_grafoP* leggiNomiCitta(t_grafoP* G);
 void salvaGrafo(t_grafoP* G);
-void salvaGrafoCitta(t_grafoC* C);
+void salvaGrafoCitta(t_grafoC* C, int nv);
 t_grafoC** leggiGrafoCitta(int nv);
 void dijkstraAereoportiCosto(t_grafoP* G, int s);
 void dijkstraAereoportiDistanza(t_grafoP* G, int s);

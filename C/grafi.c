@@ -660,27 +660,38 @@ void dijkstraGenerico(t_grafoP* G, int s, int mode)
 	}
 }
 
-/*
-void salvaGrafoCitta(t_grafoC* C) {
+void salvaGrafoCitta(t_grafoC **C, int nv) {
 	FILE* fp;
-	t_luogo* arcoLuogo = C->adj;
+    t_luogo* arcoLuogo = NULL;
+    int i, j;
 
-	fp = fopen("citta.txt", "a");
+    fp = fopen("citta.txt", "w");
 
-	if (!fp) {
-		printf("Il file non esiste!");
-		return;
-	}
-	fprintf(fp, "\n%d\n", C->nv);
+    for(i=0; i<nv; i++)
+    {
+        fprintf(fp, "%d\n", C[i]->nv);
 
-	for (int i = 0; i < C->nv; i++) {
-		fprintf(fp, "%s %d\n", C->nomeAlberghi[i], arcoLuogo->key);
-		arcoLuogo = arcoLuogo->next;
-	}
-	fclose(fp);
+        for(j=0; j<C[i]->nv;j++)
+        {
+            arcoLuogo = C[i]->adj[j];
+            while(arcoLuogo!=NULL)
+            {
+                fprintf(fp, "%d ", arcoLuogo->key);
+                arcoLuogo = arcoLuogo->next;
+            }
+            fprintf(fp, "-1\n");
+        }
 
-	return;
-}*/
+        for(j=2; j<C[i]->nv; j++)
+        {
+            fprintf(fp, "%s\n", C[i]->nomeAlberghi[j]);
+        }
+    }
+
+    fprintf(fp, "-5\n");
+
+    fclose(fp);
+}
 
 t_grafoC** leggiGrafoCitta(int nv) {
 	FILE* fp;
@@ -801,6 +812,7 @@ void aggiungiArcoGrafoCitta(t_grafoC *G, int i, int key)
         }
     }
 }
+
 
 
 
