@@ -167,7 +167,30 @@ t_grafoP* leggiGrafo()
 	}
 
 	fclose(fileGrafo);
+
+    G = leggiNomiCitta(G);
+
 	return G;
+}
+
+t_grafoP* leggiNomiCitta(t_grafoP* G)
+{
+    FILE *fileNomi = NULL;
+    char nomeCitta[20]; //20 è a caso
+    int i = 0;
+
+    fileNomi = fopen("nomicitta.txt", "r");
+
+    if(fileNomi == NULL)
+        return G;
+
+    while(fscanf(fileNomi, "%s", nomeCitta)!=EOF && i<G->nv)
+    {
+        strcpy(G->nomiCitta[i], nomeCitta);
+        i++;
+    }
+
+    return G;
 }
 
 void salvaGrafo(t_grafoP* G)
@@ -249,6 +272,14 @@ t_grafoP* creaGrafoPrincipale(int n)
 				G->adjStazioni[i] = NULL;
 			}
 		}
+
+        G->nomiCitta = (char **)malloc(n * sizeof(char*));
+
+        for(i=0; i<n; i++)
+           G->nomiCitta[i] = (char *)malloc(20 * sizeof(char));
+
+
+
 	}
 	return G;
 }
@@ -281,6 +312,7 @@ void stampaGrafoPrincipale(t_grafoP* G)
 {
 	int i, ne = 0;
 	t_arcoP* e;
+
 	if (G)
 	{
 		printf("Il grafo ha %d vertici\n", G->nv);
@@ -288,26 +320,31 @@ void stampaGrafoPrincipale(t_grafoP* G)
 		{
 			if (G->stazioni[i] == 0)
 				continue;
-			printf("Stazioni adiacenti al nodo %d ->", i);
+
+            printf("Stazioni adiacenti a %s ->", G->nomiCitta[i]);
 			e = G->adjStazioni[i];
 			while (e)
 			{
-				printf("%d", e->key);
+                printf("%s", G->nomiCitta[e->key]);
 				ne = ne + 1;
 				e = e->next;
 			}
 			printf("\n");
 		}
+
+        printf("\n");
+
 		for (i = 0; i < G->nv; i++)
 		{
 			if (G->aereoporti[i] == 0)
 				continue;
-			printf("Aereoporti adiacenti al nodo %d ->", i);
+
+            printf("Aereoporti adiacenti a %s ->", G->nomiCitta[i]);
 			e = G->adjAereoporti[i];
 			while (e)
 			{
-				printf("%d", e->key);
-				ne = ne + 1;
+                printf("%s", G->nomiCitta[e->key]);
+                ne = ne + 1;
 				e = e->next;
 			}
 			printf("\n");
@@ -315,39 +352,63 @@ void stampaGrafoPrincipale(t_grafoP* G)
 	}
 }
 
-void stampaGrafoCitta(t_grafoC* G, int stampaStazioni)
+void stampaGrafoCitta(t_grafoC **G, int stampaStazioni, int nv)
 {
 	//se stampaStazioni è 1 stampa le stazioni, se è 0 stampa gli aereoporti, se è 2 stampa entrambi
-	int i, ne = 0, j = 0;
+    int i;
 	t_luogo* e;
+
 	if (G)
 	{
-		printf("Il grafo ha %d vertici\n", G->nv);
-		for (i = 2; i < G->nv; i++)
-		{
-			e = G->adj[i];
-			if (G->adj[0] != NULL)
-			{
-				printf("Stazione della citta: %d\n", G->adj[0]->key);
-				ne++;
-			}
-			if (G->adj[1] != NULL)
-			{
-				printf("Aereoporto della citta: %d\n", G->adj[1]->key);
-				ne++;
-			}
-			printf("Alberghi della citta:\n");
-			while (e)
-			{
-				printf("%d - %s", e->key, G->nomeAlberghi[j]);
-				ne++;
-				e = e->next;
-				j++;
-			}
-			printf("\n");
-		}
-		printf("Il grafo ha %d archi\n", ne);
+        printf("Il grafo ha %d vertici\n", nv);
+
+        for(i=0; i<nv; i++)
+            stampaCitta(G[i]);
 	}
+}
+
+void stampaCitta(t_grafoC *G)
+{
+    int i;
+    t_luogo *l;
+
+    for(i=0; i<G->nv; i++)
+    {
+        l = G->adj[i];
+
+        if(i == 0)
+        {
+            printf("Luoghi adiacenti all'aereoporto: ");
+            while(l!=NULL)
+            {
+                printf("%s", G->nomeAlberghi[i]);
+                l=l->next;
+            }
+            printf("\n");
+            continue;
+        }
+
+        if(i == 1)
+        {
+            printf("Luoghi adiacenti alla stazione: ");
+            while(l!=NULL)
+            {
+                printf("%s", G->nomeAlberghi[i]);
+                l=l->next;
+            }
+            printf("\n");
+            continue;
+        }
+
+        printf("Luoghi adiacenti a %s: ", G->nomeAlberghi[i]);
+        while(l!=NULL)
+        {
+            printf("%s", G->nomeAlberghi[i]);
+            l=l->next;
+        }
+        printf("\n");
+
+    }
 }
 
 void rimuoviArcoStazioniGrafoPrincipale(t_grafoP* G, int u, int v)
@@ -599,6 +660,7 @@ void dijkstraGenerico(t_grafoP* G, int s, int mode)
 	}
 }
 
+/*
 void salvaGrafoCitta(t_grafoC* C) {
 	FILE* fp;
 	t_luogo* arcoLuogo = C->adj;
@@ -618,13 +680,21 @@ void salvaGrafoCitta(t_grafoC* C) {
 	fclose(fp);
 
 	return;
-}
+}*/
 
-t_grafoC* leggiGrafoCitta() {
+t_grafoC** leggiGrafoCitta(int nv) {
 	FILE* fp;
-	int nv, key, nadj;
-	t_grafoC* grafoCitta = NULL;
+    int key, i, j, verticiCitta;
+    char nomealbergo[20];
+    t_grafoC** GC = NULL;
 	t_luogo* arcoLuogo = NULL;
+
+    GC = (t_grafoC **)malloc(sizeof(t_grafoC*)*nv);
+
+    for(i=0; i<nv; i++)
+    {
+        GC[i] = NULL;
+    }
 
 	fp = fopen("citta.txt", "r");
 	if (!fp) {
@@ -632,27 +702,105 @@ t_grafoC* leggiGrafoCitta() {
 		return NULL;
 	}
 
-	fscanf(fp, "%d\n", &nv);
+    for(i=0; i<nv; i++)
+    {
+        fscanf(fp, "%d", &verticiCitta);
 
-	grafoCitta = creaGrafoCitta(nv);
-	arcoLuogo = (t_luogo*)malloc(sizeof(t_luogo));
-	
+        if(verticiCitta == -5)
+            return GC;
 
-	for (int i = 0; i < grafoCitta->nv; i++) {
-		
-		fscanf(fp, "%s %d", grafoCitta->nomeAlberghi[i], &nadj);
-		//printf("\nNumero adiacenze: %d\n", nadj);
-		for (int j = 0; j < nadj; j++) {
-			fscanf(fp, "%d", &key);
-			//printf("Chiave: %d\n", key);
-			inserimentoInTesta(&grafoCitta->adj[i], key);
-		}
-		stampaLista(grafoCitta->adj[i]);
-		//printf("\nStampo: %d\n", grafoCitta->adj[i]->key);
-	}
+        GC[i] = (t_grafoC *)malloc(sizeof(t_grafoC));
+        GC[i]->nv = verticiCitta;
+        GC[i]->adj = (t_luogo**)malloc(verticiCitta *sizeof(t_luogo*));
+
+        GC[i]->nomeAlberghi = (char **)calloc(verticiCitta, sizeof(char*));
+
+        for(j=0; j<verticiCitta; j++)
+        {
+            GC[i]->adj[j] = NULL;
+            GC[i]->nomeAlberghi[j] = (char *)calloc(20, sizeof(char));
+        }
+
+        j=0;
+
+        while(fscanf(fp, "%d", &key))
+        {
+            if(key==-1)
+            {
+                j++;
+                continue;
+            }
+
+            if(key == -2)
+                break;
+
+
+            aggiungiArcoGrafoCitta(GC[i], j, key);
+        }
+
+        strcpy(GC[i]->nomeAlberghi[0], "Aereoporto");
+        strcpy(GC[i]->nomeAlberghi[1], "Stazioni");
+
+
+        for(j = 2; j<verticiCitta; j++)
+        {
+            fscanf(fp, "%s", nomealbergo);
+            strcpy(GC[i]->nomeAlberghi[j], nomealbergo);
+        }
+    }
+
 
 	fclose(fp);
 
-	return grafoCitta;
+    return GC;
 }
+
+void aggiungiArcoGrafoCitta(t_grafoC *G, int i, int key)
+{
+    t_luogo *nuovo, *e;
+
+    printf("provo ad aggiungere %d %d\n", i, key);
+
+    if (i<0 || i>G->nv - 1 || key<0 || key>G->nv - 1)
+    {
+        printf("\nArco non aggiunto, vertici richiesti invalidi(valori validi: 0 a %d)", G->nv - 1);
+        return;
+    }
+
+    nuovo = (t_luogo*)malloc(sizeof(t_luogo));
+
+    if (nuovo == NULL)
+        printf("\nAllocazione fallita");
+    else
+    {
+        nuovo->key = key;
+        nuovo->next = NULL;
+
+        if(G->adj[i] == NULL)
+            G->adj[i] = nuovo;
+        else
+        {
+            e = G->adj[i];
+
+            while(e->next != NULL)
+            {
+                if(e->key == key)
+                {
+                    free(nuovo);
+                    return;
+                }
+                e = e->next;
+            }
+
+            if(e->key == key)
+            {
+                free(nuovo);
+                return;
+            }
+            e->next = nuovo;
+        }
+    }
+}
+
+
 

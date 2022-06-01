@@ -15,5 +15,5 @@ typedef struct utente {
 //PROTOTIPI FUNZIONE
 Utente registrazioneUtente(); //funzione che registra un Utente su un file di testo
 Utente loginUtente(); //funzione che effettua il login di un utente
-void menuUtente(Utente user, t_grafoP *G, t_grafoC *GC); //mostra menu Utente normale
-void menuAdmin(Utente user, t_grafoP* G, t_grafoC* GC);  //mostra menu Admin
+void menuUtente(Utente user, t_grafoP *G, t_grafoC **GC); //mostra menu Utente normale
+void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC);  //mostra menu Admin

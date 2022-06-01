@@ -3,6 +3,7 @@
 #include <stdlib.h> 
 #include "utenti.h"
 #define _CRT_SECURE_NO_WARNINGS
+
 //DEFINZIONE FUNZIONI
 Utente registrazioneUtente() {
 	FILE* f;
@@ -99,7 +100,7 @@ Utente loginUtente() {
 	}
 }
 
-void menuUtente(Utente user, t_grafoP* G, t_grafoC* GC) {
+void menuUtente(Utente user, t_grafoP* G, t_grafoC **GC) {
 	int scelta;
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
@@ -119,7 +120,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC* GC) {
 			break;
 		case 1:
 			printf("il numero e' uno\n");
-			stampaGrafoCitta(GC, 2);
+            stampaGrafoCitta(GC, 2, G->nv);
 			break;
 		case 2:
 			printf("il numero e' due\n");
@@ -134,7 +135,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC* GC) {
 	}
 }
 
-void menuAdmin(Utente user, t_grafoP* G, t_grafoC* GC) {
+void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC) {
 	int scelta;
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
@@ -169,7 +170,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC* GC) {
 			break;
 		case 1:
 			printf("Mostra tutte le citta' disponibili");
-			stampaGrafoCitta(GC, 2);
+            stampaGrafoCitta(GC, 2, G->nv);
 			break;
 		case 2:
 			printf("il numero e' due\n");
