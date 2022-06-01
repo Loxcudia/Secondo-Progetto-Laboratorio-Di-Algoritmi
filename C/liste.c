@@ -52,3 +52,15 @@ int estraiMinimo(t_lista **lista, int *d)
 	free(pmin);
 	return u;
 }
+
+void stampaLista(t_lista* lista) {
+	if (lista != NULL) {
+		printf("%d -> ", lista->data);
+		stampaLista(lista->next);
+	}
+	printf("| NULL");
+	return;
+		
+	
+
+}

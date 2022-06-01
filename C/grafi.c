@@ -339,7 +339,7 @@ void stampaGrafoCitta(t_grafoC* G)
 			while (e)
 			{
 				printf("%d - %s", e->key, G->nomeAlberghi[j]);
-				ne = ne + 1;
+				ne++;
 				e = e->next;
 				j++;
 			}
@@ -602,13 +602,13 @@ void salvaGrafoCitta(t_grafoC* C) {
 	FILE* fp;
 	t_luogo *arcoLuogo = C->adj;
 
-	fp = fopen("citta2.txt", "w+");
+	fp = fopen("citta.txt", "a");
 
 	if (!fp) {
 		printf("Il file non esiste!");
 		return;
 	}
-	fprintf(fp, "%d\n", C->nv);
+	fprintf(fp, "\n%d\n", C->nv);
 
 	for (int i = 0; i < C->nv; i++) {
 		fprintf(fp, "%s %d\n", C->nomeAlberghi[i], arcoLuogo->key);
@@ -621,8 +621,7 @@ void salvaGrafoCitta(t_grafoC* C) {
 
 t_grafoC* leggiGrafoCitta() {
 	FILE* fp;
-	int nv;
-	int key;
+	int nv, key, nadj;
 	t_grafoC* grafoCitta = NULL;
 	t_luogo *arcoLuogo = NULL;
 
@@ -639,11 +638,18 @@ t_grafoC* leggiGrafoCitta() {
 	arcoLuogo = (t_luogo*)malloc(sizeof(t_luogo));
 
 	for (int i = 0; i < grafoCitta->nv; i++) {
-		fscanf(fp, "%s %d", grafoCitta->nomeAlberghi[i], &key);
-		inserimentoInTesta(&arcoLuogo, key);
+		fscanf(fp, "%s %d", grafoCitta->nomeAlberghi[i], &nadj);
+		printf("Numero adiacenze: %d\n", nadj);
+		for (int j = 0; j < nadj; j++) {
+			fscanf(fp, "%d", &key);
+			printf("Chiave: %d\n", key);
+			inserimentoInTesta(&arcoLuogo, key);
+		}
+		stampaLista(arcoLuogo);
+		grafoCitta->adj[i] = arcoLuogo;
+		printf("\nStampo: %d", grafoCitta->adj[i]->key);
 	}
 
-	grafoCitta->adj = arcoLuogo;
 	fclose(fp);
 
 	return grafoCitta;

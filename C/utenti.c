@@ -139,7 +139,6 @@ void menuAdmin(Utente user) {
 	int scelta;
 	t_grafoP *grafoPrincipale = leggiGrafo();
 	t_grafoC* grafoCitta = leggiGrafoCitta();
-	salvaGrafoCitta(grafoCitta);
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
 	fflush(stdin);
