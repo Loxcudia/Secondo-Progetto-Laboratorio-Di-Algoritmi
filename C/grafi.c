@@ -107,7 +107,7 @@ t_grafoP* leggiGrafo()
 			fscanf(fileGrafo, "%d", &presenza);
 			G->aereoporti[i] = presenza;
 
-            printf("%d ", presenza);
+           // printf("%d ", presenza);
 		}
 		
         printf("\n");
@@ -117,7 +117,7 @@ t_grafoP* leggiGrafo()
 			fscanf(fileGrafo, "%d", &presenza);
 			G->stazioni[i] = presenza;
 
-            printf("%d ", presenza);
+           // printf("%d ", presenza);
         }
 
         printf("\n");
@@ -270,6 +270,7 @@ t_grafoC* creaGrafoCitta(int n)
 			G->nv = n;
 			G->nomeAlberghi = (char**)malloc(n * sizeof(char*));
 			for (i = 0; i < n; i++)
+				G->nomeAlberghi[i] = (char*)malloc(200 * sizeof(char));
 				G->adj[i] = NULL;
 		}
 	}
@@ -597,4 +598,53 @@ void dijkstraGenerico(t_grafoP* G, int s, int mode)
 	}
 }
 
+void salvaGrafoCitta(t_grafoC* C) {
+	FILE* fp;
+	t_luogo *arcoLuogo = C->adj;
 
+	fp = fopen("citta2.txt", "w+");
+
+	if (!fp) {
+		printf("Il file non esiste!");
+		return;
+	}
+	fprintf(fp, "%d\n", C->nv);
+
+	for (int i = 0; i < C->nv; i++) {
+		fprintf(fp, "%s %d\n", C->nomeAlberghi[i], arcoLuogo->key);
+		arcoLuogo = arcoLuogo->next;
+	}
+	fclose(fp);
+
+	return;
+}
+
+t_grafoC* leggiGrafoCitta() {
+	FILE* fp;
+	int nv;
+	int key;
+	t_grafoC* grafoCitta = NULL;
+	t_luogo *arcoLuogo = NULL;
+
+	fp = fopen("citta.txt", "r");
+	if (!fp) {
+		printf("Il file non esiste!");
+		return NULL;
+	}
+	
+	fscanf(fp, "%d\n", &nv);
+	
+	grafoCitta = creaGrafoCitta(nv);
+	
+	arcoLuogo = (t_luogo*)malloc(sizeof(t_luogo));
+
+	for (int i = 0; i < grafoCitta->nv; i++) {
+		fscanf(fp, "%s %d", grafoCitta->nomeAlberghi[i], &key);
+		inserimentoInTesta(&arcoLuogo, key);
+	}
+
+	grafoCitta->adj = arcoLuogo;
+	fclose(fp);
+
+	return grafoCitta;
+}

@@ -1,0 +1,7 @@
+6
+Whiterun 0
+Solitude 1
+Windhelm 2
+Markarth 3
+Riften 4
+Dawnstar 5

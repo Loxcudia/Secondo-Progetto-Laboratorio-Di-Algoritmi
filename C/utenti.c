@@ -137,6 +137,9 @@ void menuUtente(Utente user) {
 
 void menuAdmin(Utente user) {
 	int scelta;
+	t_grafoP *grafoPrincipale = leggiGrafo();
+	t_grafoC* grafoCitta = leggiGrafoCitta();
+	salvaGrafoCitta(grafoCitta);
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
 	fflush(stdin);
@@ -154,10 +157,10 @@ void menuAdmin(Utente user) {
 
 	printf("***************** MENU ADMIN *****************\n\nCiao, %s", user.username);
 	while (1) {
-		printf("\nOpzioni possibili:\n\n0 - Mostra tutti i viaggi possibili \n1 - Mostra viaggi in aereo\n2 - Mostra viaggi in treno\n3 - Mostra mete in attesa\n4 - Logout\n\nInserire il valore: ");
+		printf("\nOpzioni possibili:\n\n0 - Mostra tutti i viaggi possibili\n1 - Mostra tutte le citta' disponibili\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno\n4 - Mostra mete in attesa\n5 - Logout\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
-		while (scelta != 0 && scelta != 1 && scelta != 2 && scelta != 3 && scelta != 4) {
+		while (scelta != 0 && scelta != 1 && scelta != 2 && scelta != 3 && scelta != 4 && scelta != 5) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -165,10 +168,12 @@ void menuAdmin(Utente user) {
 
 		switch (scelta) {
 		case 0:
-			printf("il numero e' zero\n");
+			printf("Mostro tutti i viaggi disponibili: ");
+			stampaGrafoPrincipale(grafoPrincipale);
 			break;
 		case 1:
-			printf("il numero e' uno\n");
+			printf("Mostra tutte le citta' disponibili");
+			stampaGrafoCitta(grafoCitta);
 			break;
 		case 2:
 			printf("il numero e' due\n");
@@ -176,7 +181,10 @@ void menuAdmin(Utente user) {
 		case 3:
 			printf("il numero e' tre\n");
 			break;
-		case 4:
+		case 4: 
+			printf("Sono 4");
+			break;
+		case 5:
 			printf("Arrivederci, %s :'(", user.username);
 			return;
 		}
