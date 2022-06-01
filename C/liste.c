@@ -5,21 +5,21 @@
 #include "grafi.h"
 #include "liste.h"
 
-void inserimentoInTesta(t_lista **L, int data)
+void inserimentoInTesta(t_lista** L, int data)
 {
-	t_lista *tmp = NULL;
-	
+	t_lista* tmp = NULL;
+
 	tmp = (t_lista*)malloc(sizeof(t_lista));
-	
-	if(tmp == NULL) {
+
+	if (tmp == NULL) {
 		printf("Allocazione fallita\n");
 		return;
 	}
-	
+
 	tmp->data = data;
 	tmp->next = NULL;
-	
-	if(L == NULL) {
+
+	if (L == NULL) {
 		*L = tmp;
 	}
 	else {
@@ -28,15 +28,15 @@ void inserimentoInTesta(t_lista **L, int data)
 	}
 }
 
-int estraiMinimo(t_lista **lista, int *d)
+int estraiMinimo(t_lista** lista, int* d)
 {
-	t_lista *p, *pmin, *prec = NULL, *precmin = NULL;
+	t_lista* p, * pmin, * prec = NULL, * precmin = NULL;
 	int u;
 	pmin = *lista;
 	p = *lista;
-	while(p!=NULL)
+	while (p != NULL)
 	{
-		if((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX)
+		if ((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX)
 		{
 			pmin = p;
 			precmin = prec;
@@ -45,7 +45,7 @@ int estraiMinimo(t_lista **lista, int *d)
 		p = p->next;
 	}
 	u = pmin->data;
-	if(precmin == NULL)
+	if (precmin == NULL)
 		*lista = (*lista)->next;
 	else
 		precmin->next = pmin->next;
@@ -54,13 +54,12 @@ int estraiMinimo(t_lista **lista, int *d)
 }
 
 void stampaLista(t_lista* lista) {
-	if (lista != NULL) {
-		printf("%d -> ", lista->data);
+	if (!lista)
+		return;
+	else
+	{
+		printf("%d ->", lista->data);
 		stampaLista(lista->next);
+		printf("\n");
 	}
-	printf("| NULL");
-	return;
-		
-	
-
 }

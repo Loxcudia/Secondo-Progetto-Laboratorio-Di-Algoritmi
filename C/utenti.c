@@ -99,11 +99,8 @@ Utente loginUtente() {
 	}
 }
 
-void menuUtente(Utente user) {
+void menuUtente(Utente user, t_grafoP* G, t_grafoC* GC) {
 	int scelta;
-    t_grafoP *G;
-
-    G = leggiGrafo();
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
 	while (1) {
@@ -118,9 +115,11 @@ void menuUtente(Utente user) {
 		switch (scelta) {
 		case 0:
 			printf("il numero e' zero\n");
+			stampaGrafoPrincipale(G);
 			break;
 		case 1:
 			printf("il numero e' uno\n");
+			stampaGrafoCitta(GC, 2);
 			break;
 		case 2:
 			printf("il numero e' due\n");
@@ -135,10 +134,8 @@ void menuUtente(Utente user) {
 	}
 }
 
-void menuAdmin(Utente user) {
+void menuAdmin(Utente user, t_grafoP* G, t_grafoC* GC) {
 	int scelta;
-	t_grafoP *grafoPrincipale = leggiGrafo();
-	t_grafoC* grafoCitta = leggiGrafoCitta();
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
 	fflush(stdin);
@@ -150,7 +147,7 @@ void menuAdmin(Utente user) {
 		scanf("%d", &scelta);
 	}
 	if (scelta) {
-		menuUtente(user);
+		menuUtente(user, G, GC);
 		return;
 	}
 
@@ -168,11 +165,11 @@ void menuAdmin(Utente user) {
 		switch (scelta) {
 		case 0:
 			printf("Mostro tutti i viaggi disponibili: ");
-			stampaGrafoPrincipale(grafoPrincipale);
+			stampaGrafoPrincipale(G);
 			break;
 		case 1:
 			printf("Mostra tutte le citta' disponibili");
-			stampaGrafoCitta(grafoCitta);
+			stampaGrafoCitta(GC, 2);
 			break;
 		case 2:
 			printf("il numero e' due\n");
@@ -180,7 +177,7 @@ void menuAdmin(Utente user) {
 		case 3:
 			printf("il numero e' tre\n");
 			break;
-		case 4: 
+		case 4:
 			printf("Sono 4");
 			break;
 		case 5:
