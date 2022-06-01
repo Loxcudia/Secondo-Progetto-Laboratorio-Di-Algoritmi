@@ -681,6 +681,7 @@ void salvaGrafoCitta(t_grafoC **C, int nv) {
             }
             fprintf(fp, "-1\n");
         }
+		fprintf(fp, "-2\n");
 
         for(j=2; j<C[i]->nv; j++)
         {
