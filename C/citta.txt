@@ -14,8 +14,24 @@ DaPeppino
 1 -1
 2 -1
 -1
+-2
 
 SolitudeBay
+
+2
+-1
+-1
+-2
+
+2
+-1
+-1
+-2
+
+2
+-1
+-1
+-2
 
 -5
 
@@ -23,10 +39,3 @@ SolitudeBay
 
 
 
-
-Whiterun 2 0
-Solitude 2 1
-Windhelm 2 2
-Markarth 2 3
-Riften 2 4
-Dawnstar 2 5

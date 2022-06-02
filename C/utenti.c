@@ -100,7 +100,7 @@ Utente loginUtente() {
 	}
 }
 
-void menuUtente(Utente user, t_grafoP* G, t_grafoC **GC) {
+void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 	int scelta;
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
@@ -115,18 +115,138 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC **GC) {
 		}
 		switch (scelta) {
 		case 0:
-			printf("il numero e' zero\n");
 			stampaGrafoPrincipale(G);
+			printf("-0 Viaggio in aereo\n-1 Viaggio in treno\n");
+			int boh;
+			scanf("%d", &boh);
+			if (boh != 0 && boh != 2)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			printf("Quale meta vuoi raggiungere?\n");
+			char arrivo[20], partenza[20];
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			int arr, part;
+			int modalita;
+			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+			scanf("%d", &modalita);
+			if (modalita != 0 && modalita != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			if (boh == 0)
+			{
+				for (int i = 0; i < G->nv; i++)
+				{
+					if (strcmp(G->nomiCitta[i], "") == 0)
+						break;
+					if (G->aereoporti[i] == 1)
+					{
+						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+							arr = i;
+						if (strcmp(G->nomiCitta[i], partenza) == 0)
+							part = i;
+					}
+				}
+				dijkstraGenerico(G, arr, modalita);
+				printf("Alberghi della citta:\n");
+				for (int i = 0; i < GC[arr]->nv; i++)
+					printf("%s\n", GC[arr]->nomeAlberghi[i]);
+
+			}
+			else if (boh == 1)
+			{
+				printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+				scanf("%d", &modalita);
+				if (modalita != 0 && modalita != 1)
+				{
+					printf("Errore\n");
+					continue;
+				}
+				for (int i = 0; i < G->nv; i++)
+				{
+					if (strcmp(G->nomiCitta[i], "") == 0)
+						break;
+					if (G->stazioni[i] == 1)
+					{
+						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+							arr = i;
+						if (strcmp(G->nomiCitta[i], partenza) == 0)
+							part = i;
+					}
+				}
+				dijkstraGenerico(G, arr, modalita);
+				printf("Alberghi della citta:\n");
+				for (int i = 0; i < GC[arr]->nv; i++)
+					printf("%s\n", GC[arr]->nomeAlberghi[i]);
+			}
 			break;
 		case 1:
-			printf("il numero e' uno\n");
-            stampaGrafoCitta(GC, 2, G->nv);
+			stampaGrafoPrincipale(G);
+			printf("Quale meta vuoi raggiungere?\n");
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+			scanf("%d", &modalita);
+			if (modalita != 0 && modalita != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			for (int i = 0; i < G->nv; i++)
+			{
+				if (strcmp(G->nomiCitta[i], "") == 0)
+					break;
+				if (G->aereoporti[i] == 1)
+				{
+					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						arr = i;
+					if (strcmp(G->nomiCitta[i], partenza) == 0)
+						part = i;
+				}
+			}
+			dijkstraGenerico(G, arr, modalita);
+			printf("Alberghi della citta:\n");
+			for (int i = 0; i < GC[arr]->nv; i++)
+				printf("%s\n", GC[arr]->nomeAlberghi[i]);
 			break;
 		case 2:
-			printf("il numero e' due\n");
+			printf("il numero e' uno\n");
+			stampaGrafoPrincipale(G);
+			printf("Quale meta vuoi raggiungere?\n");
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+			scanf("%d", &modalita);
+			if (modalita != 0 && modalita != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			for (int i = 0; i < G->nv; i++)
+			{
+				if (strcmp(G->nomiCitta[i], "") == 0)
+					break;
+				if (G->stazioni[i] == 1)
+				{
+					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						arr = i;
+					if (strcmp(G->nomiCitta[i], partenza) == 0)
+						part = i;
+				}
+			}
+			dijkstraGenerico(G, arr, modalita);
+			printf("Alberghi della citta:\n");
+			for (int i = 0; i < GC[arr]->nv; i++)
+				printf("%s\n", GC[arr]->nomeAlberghi[i]);
 			break;
 		case 3:
-			printf("il numero e' tre\n");
 			break;
 		case 4:
 			printf("Arrivederci, %s :'(", user.username);
@@ -135,7 +255,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC **GC) {
 	}
 }
 
-void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC) {
+void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC) {
 	int scelta;
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
@@ -170,7 +290,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC) {
 			break;
 		case 1:
 			printf("Mostra tutte le citta' disponibili");
-            stampaGrafoCitta(GC, 2, G->nv);
+			stampaGrafoCitta(GC, 2, G->nv);
 			break;
 		case 2:
 			printf("il numero e' due\n");
