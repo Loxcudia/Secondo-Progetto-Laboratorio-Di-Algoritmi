@@ -17,3 +17,5 @@ Utente registrazioneUtente(); //funzione che registra un Utente su un file di te
 Utente loginUtente(); //funzione che effettua il login di un utente
 void menuUtente(Utente user, t_grafoP *G, t_grafoC **GC); //mostra menu Utente normale
 void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC);  //mostra menu Admin
+void aggiungiArcoMenu(t_grafoP *G); //menu per l'aggiunta di un arco al grafo principale
+void rimuoviArcoMenu(t_grafoP *G); //menu per la rimozione di un arco

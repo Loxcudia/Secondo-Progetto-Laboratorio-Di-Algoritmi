@@ -116,8 +116,6 @@ t_grafoP* leggiGrafo()
 		{
 			fscanf(fileGrafo, "%d", &presenza);
 			G->stazioni[i] = presenza;
-
-			// printf("%d ", presenza);
 		}
 
 		printf("\n");
@@ -211,11 +209,13 @@ void salvaGrafo(t_grafoP* G)
 
 	for (i = 0; i < G->nv; i++)
 		fprintf(fileGrafo, "%d ", G->aereoporti[i]);
-	printf("\n");
+
+    fprintf(fileGrafo, "\n");
 
 	for (i = 0; i < G->nv; i++)
 		fprintf(fileGrafo, "%d ", G->stazioni[i]);
-	printf("\n");
+
+    fprintf(fileGrafo, "\n");
 
 	for (i = 0; i < G->nv; i++)
 	{
@@ -228,7 +228,7 @@ void salvaGrafo(t_grafoP* G)
 		}
 		fprintf(fileGrafo, "%d\n", -1);
 	}
-	fprintf(fileGrafo, "\n%d", -2);
+    fprintf(fileGrafo, "%d\n", -2);
 
 	for (i = 0; i < G->nv; i++)
 	{
@@ -241,7 +241,7 @@ void salvaGrafo(t_grafoP* G)
 		}
 		fprintf(fileGrafo, "%d\n", -1);
 	}
-	fprintf(fileGrafo, "\n%d", -2);
+    fprintf(fileGrafo, "%d\n", -2);
 
 	fclose(fileGrafo);
 }
@@ -321,11 +321,11 @@ void stampaGrafoPrincipale(t_grafoP* G)
 			if (G->stazioni[i] == 0)
 				continue;
 
-			printf("Stazioni adiacenti a %s ->", G->nomiCitta[i]);
+            printf("Stazioni adiacenti a %s -> ", G->nomiCitta[i]);
 			e = G->adjStazioni[i];
 			while (e)
 			{
-				printf("%s", G->nomiCitta[e->key]);
+                printf("%s ", G->nomiCitta[e->key]);
 				ne = ne + 1;
 				e = e->next;
 			}
@@ -339,11 +339,11 @@ void stampaGrafoPrincipale(t_grafoP* G)
 			if (G->aereoporti[i] == 0)
 				continue;
 
-			printf("Aereoporti adiacenti a %s ->", G->nomiCitta[i]);
+            printf("Aereoporti adiacenti a %s -> ", G->nomiCitta[i]);
 			e = G->adjAereoporti[i];
 			while (e)
 			{
-				printf("%s", G->nomiCitta[e->key]);
+                printf("%s ", G->nomiCitta[e->key]);
 				ne = ne + 1;
 				e = e->next;
 			}
@@ -462,12 +462,13 @@ void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 }
 
 
-void dijkstraAereoportiCosto(t_grafoP* G, int s)
+int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
 	int i, u;
-	t_lista* lista = NULL;
+    int prec;
+    t_lista* lista = NULL;
 	t_arcoP* e;
 
 	d = (int*)calloc(sizeof(int), G->nv);
@@ -500,17 +501,36 @@ void dijkstraAereoportiCosto(t_grafoP* G, int s)
 		}
 	}
 
+    if(pi[meta] == -1)
+    {
+        printf("\nLa meta %s non e\' raggiungibile da %s con un aereo", G->nomiCitta[meta], G->nomiCitta[s]);
+        return 0;
+    }
+
 	for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    //^for da eliminare, tenuto solo per debug
 
-	return;
+
+    prec = meta;
+
+    while(prec != 0)
+    {
+        printf("%s <- ", G->nomiCitta[prec]);
+        prec = pi[prec];
+    }
+    printf("%s\n\n", G->nomiCitta[prec]);
+
+
+    return 1;
 }
 
-void dijkstraAereoportiDistanza(t_grafoP* G, int s)
+int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
 	int i, u;
+    int prec;
 	t_lista* lista = NULL;
 	t_arcoP* e;
 
@@ -544,17 +564,36 @@ void dijkstraAereoportiDistanza(t_grafoP* G, int s)
 		}
 	}
 
-	for (i = 0; i < G->nv; i++)
-		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    if(pi[meta] == -1)
+    {
+        printf("\nLa meta %s non e\' raggiungibile da %s con un aereo", G->nomiCitta[meta], G->nomiCitta[s]);
+        return 0;
+    }
 
-	return;
+    for (i = 0; i < G->nv; i++)
+        printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    //^for da eliminare, tenuto solo per debug
+
+
+    prec = meta;
+
+    while(prec != 0)
+    {
+        printf("%s <- ", G->nomiCitta[prec]);
+        prec = pi[prec];
+    }
+    printf("%s\n\n", G->nomiCitta[prec]);
+
+
+    return 1;
 }
 
-void dijkstraStazioniCosto(t_grafoP* G, int s)
+int dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
 	int i, u;
+    int prec;
 	t_lista* lista = NULL;
 	t_arcoP* e;
 
@@ -588,17 +627,36 @@ void dijkstraStazioniCosto(t_grafoP* G, int s)
 		}
 	}
 
+    if(pi[meta] == -1)
+    {
+        printf("\nLa meta %s non e\' raggiungibile da %s con un treno", G->nomiCitta[meta], G->nomiCitta[s]);
+        return 0;
+    }
+
 	for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    //^for da eliminare, tenuto solo per debug
 
-	return;
+
+    prec = meta;
+
+    while(prec != 0)
+    {
+        printf("%s <- ", G->nomiCitta[prec]);
+        prec = pi[prec];
+    }
+    printf("%s\n\n", G->nomiCitta[prec]);
+
+
+    return 1;
 }
 
-void dijkstraStazioniDistanza(t_grafoP* G, int s)
+int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
 	int i, u;
+    int prec;
 	t_lista* lista = NULL;
 	t_arcoP* e;
 
@@ -632,29 +690,47 @@ void dijkstraStazioniDistanza(t_grafoP* G, int s)
 		}
 	}
 
+    if(pi[meta] == -1)
+    {
+        printf("\nLa meta %s non e\' raggiungibile da %s con un treno", G->nomiCitta[meta], G->nomiCitta[s]);
+        return 0;
+    }
+
 	for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    //^for da eliminare, tenuto solo per debug
 
-	return;
+
+    prec = meta;
+
+    while(prec != 0)
+    {
+        printf("%s <- ", G->nomiCitta[prec]);
+        prec = pi[prec];
+    }
+    printf("%s\n\n", G->nomiCitta[prec]);
+
+
+    return 1;
 }
 
-void dijkstraGenerico(t_grafoP* G, int s, int mode)
+int dijkstraGenerico(t_grafoP* G, int s, int meta, int mode)
 {
 	switch (mode) {
 	case(0):
-		dijkstraAereoportiCosto(G, s);
+        return dijkstraAereoportiCosto(G, s, meta);
 		break;
 
 	case(1):
-		dijkstraAereoportiDistanza(G, s);
+        return dijkstraAereoportiDistanza(G, s, meta);
 		break;
 
 	case(2):
-		dijkstraStazioniCosto(G, s);
+        return dijkstraStazioniCosto(G, s, meta);
 		break;
 
 	case(3):
-		dijkstraStazioniDistanza(G, s);
+        return dijkstraStazioniDistanza(G, s, meta);
 		break;
 	}
 }
@@ -771,7 +847,7 @@ void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)
 {
 	t_luogo* nuovo, * e;
 
-	printf("provo ad aggiungere %d %d\n", i, key);
+    printf("provo ad aggiungere %d %d\n", i, key);
 
 	if (i<0 || i>G->nv - 1 || key<0 || key>G->nv - 1)
 	{
@@ -812,4 +888,84 @@ void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)
 			e->next = nuovo;
 		}
 	}
+}
+
+void stampaNomiCitta(t_grafoP* G, int mode)
+{
+    int i;
+
+    //0 per stampare solo le città che hanno aeroporti, 1 per le stazioni
+
+    if(mode == 0)
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->aereoporti[i])
+                printf("%s\n", G->nomiCitta[i]);
+        }
+
+    if(mode == 1)
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->stazioni[i])
+                printf("%s\n", G->nomiCitta[i]);
+        }
+}
+
+void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
+{
+    t_arcoP *prev, *e;
+
+    if(u<0 || u>G->nv-1 || v<0 || v>G->nv-1)
+    {
+        printf("\nArco non rimosso, vertici richiesti invalidi");
+        return;
+    }
+
+    if(mode == 0)
+    {
+        e = G->adjAereoporti[u];
+
+        if(e->key == v)
+            G->adjAereoporti[u] = e->next;
+        else
+        {
+            prev = e;
+            while(prev != NULL && prev->next->key != v)
+                prev = prev->next;
+
+            if(prev == NULL)
+            {
+                printf("\nArco assente");
+                return;
+            }
+
+            e = prev->next;
+            prev->next = e->next;
+        }
+        free(e);
+    }
+
+    if(mode == 1)
+    {
+        e = G->adjStazioni[u];
+
+        if(e->key == v)
+            G->adjStazioni[u] = e->next;
+        else
+        {
+            prev = e;
+            while(prev != NULL && prev->next->key != v)
+                prev = prev->next;
+
+            if(prev == NULL)
+            {
+                printf("\nArco assente");
+                return;
+            }
+
+            e = prev->next;
+            prev->next = e->next;
+        }
+        free(e);
+    }
 }

@@ -152,7 +152,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 							part = i;
 					}
 				}
-				dijkstraGenerico(G, arr, modalita);
+                dijkstraGenerico(G, part, arr, modalita);
 				printf("Alberghi della citta:\n");
 				for (int i = 0; i < GC[arr]->nv; i++)
 					printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -179,7 +179,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 							part = i;
 					}
 				}
-				dijkstraGenerico(G, arr, modalita);
+                dijkstraGenerico(G, part, arr, modalita);
 				printf("Alberghi della citta:\n");
 				for (int i = 0; i < GC[arr]->nv; i++)
 					printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -210,7 +210,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 						part = i;
 				}
 			}
-			dijkstraGenerico(G, arr, modalita);
+            dijkstraGenerico(G, part, arr, modalita);
 			printf("Alberghi della citta:\n");
 			for (int i = 0; i < GC[arr]->nv; i++)
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -241,7 +241,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 						part = i;
 				}
 			}
-			dijkstraGenerico(G, arr, modalita);
+            dijkstraGenerico(G, part, arr, modalita);
 			printf("Alberghi della citta:\n");
 			for (int i = 0; i < GC[arr]->nv; i++)
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -249,7 +249,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 		case 3:
 			break;
 		case 4:
-			printf("Arrivederci, %s :'(", user.username);
+            printf("Arrivederci, %s :'(\n", user.username);
 			return;
 		}
 	}
@@ -274,10 +274,12 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC) {
 
 	printf("***************** MENU ADMIN *****************\n\nCiao, %s", user.username);
 	while (1) {
-		printf("\nOpzioni possibili:\n\n0 - Mostra tutti i viaggi possibili\n1 - Mostra tutte le citta' disponibili\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno\n4 - Mostra mete in attesa\n5 - Logout\n\nInserire il valore: ");
+        printf("\nOpzioni possibili:\n\n0 - Mostra tutti i viaggi possibili\n1 - Mostra tutte le citta' disponibili\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno\n4 - Mostra mete in attesa"
+               "\n5 - Aggiungi arco\n6 - Rimuovi arco \n7 - Logout\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
-		while (scelta != 0 && scelta != 1 && scelta != 2 && scelta != 3 && scelta != 4 && scelta != 5) {
+
+        while (scelta < 0 || scelta > 7) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -285,26 +287,269 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC) {
 
 		switch (scelta) {
 		case 0:
-			printf("Mostro tutti i viaggi disponibili: ");
+            system("cls||clear");
+            printf("Mostro tutti i viaggi disponibili: \n");
 			stampaGrafoPrincipale(G);
 			break;
 		case 1:
-			printf("Mostra tutte le citta' disponibili");
+            system("cls||clear");
+            printf("Mostra tutte le citta' disponibili");
 			stampaGrafoCitta(GC, 2, G->nv);
 			break;
 		case 2:
-			printf("il numero e' due\n");
+            system("cls||clear");
+            printf("il numero e' due\n");
 			break;
 		case 3:
-			printf("il numero e' tre\n");
+            system("cls||clear");
+            printf("il numero e' tre\n");
 			break;
 		case 4:
+            system("cls||clear");
 			printf("Sono 4");
 			break;
-		case 5:
-			printf("Arrivederci, %s :'(", user.username);
+        case 5:
+            system("cls||clear");
+            aggiungiArcoMenu(G);
+            break;
+        case 6:
+            system("cls||clear");
+            rimuoviArcoMenu(G);
+            break;
+        case 7:
+            system("cls||clear");
+            printf("Arrivederci, %s :'(\n", user.username);
 			return;
 		}
-	}
+	}   
+}
+
+void rimuoviArcoMenu(t_grafoP* G)
+{
+    int u, v;
+    int mode;
+    int i;
+
+    printf("\n1 - Rimuovi un arco dagli aeroporti\n2 - Rimuovi un arco dalle stazioni\n3 - Annulla\n\nInserire il valore: ");
+    fflush(stdin);
+    scanf("%d", &mode);
+    while(mode < 0 || mode > 3)
+    {
+        printf("\nValore inserito non valido! Inserire il valore: ");
+        fflush(stdin);
+        scanf("%d", &mode);
+    }
+
+    if(mode == 3)
+        return;
+
+    if(mode == 1)
+    {
+        stampaGrafoPrincipale(G);
+
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->aereoporti[i])
+               printf("%d - %s\n", i, G->nomiCitta[i]);
+        }
+
+
+        printf("\nInserisci il vertice di partenza: ");
+        fflush(stdin);
+        scanf("%d", &u);
+        while(u < 0 || u > G->nv-1 || G->aereoporti[u]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &u);
+        }
+
+        printf("\nInserisci il vertice di arrivo: ");
+        fflush(stdin);
+        scanf("%d", &v);
+        while(v < 0 || v > G->nv-1 || G->aereoporti[v]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &v);
+        }
+
+        rimuoviArcoGrafoPrincipale(G, u, v, 0);
+        salvaGrafo(G);
+    }
+
+    if(mode == 2)
+    {
+        stampaGrafoPrincipale(G);
+
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->stazioni[i])
+               printf("%d - %s\n", i, G->nomiCitta[i]);
+        }
+
+
+        printf("\nInserisci il vertice di partenza: ");
+        fflush(stdin);
+        scanf("%d", &u);
+        while(u < 0 || u > G->nv-1 || G->stazioni[u]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &u);
+        }
+
+        printf("\nInserisci il vertice di arrivo: ");
+        fflush(stdin);
+        scanf("%d", &v);
+        while(v < 0 || v > G->nv-1 || G->stazioni[v]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &v);
+        }
+
+        rimuoviArcoGrafoPrincipale(G, u, v, 1);
+        salvaGrafo(G);
+    }
+}
+
+
+
+void aggiungiArcoMenu(t_grafoP* G)
+{
+    int u, v, distanza, costo;
+    int mode;
+    int i;
+
+    printf("\n1 - Aggiungi un arco agli aeroporti\n2 - Aggiungi un arco alle stazioni\n3 - Annulla\n\nInserire il valore: ");
+    fflush(stdin);
+    scanf("%d", &mode);
+    while(mode < 0 || mode > 3)
+    {
+        printf("\nValore inserito non valido! Inserire il valore: ");
+        fflush(stdin);
+        scanf("%d", &mode);
+    }
+
+    if(mode == 3)
+        return;
+
+    if(mode == 1)
+    {
+        stampaGrafoPrincipale(G);
+
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->aereoporti[i])
+               printf("%d - %s\n", i, G->nomiCitta[i]);
+        }
+
+        printf("\nInserisci il vertice di partenza: ");
+        fflush(stdin);
+        scanf("%d", &u);
+        while(u < 0 || u > G->nv-1 || G->aereoporti[u]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &u);
+        }
+
+        printf("\nInserisci il vertice di arrivo: ");
+        fflush(stdin);
+        scanf("%d", &v);
+        while(v < 0 || v > G->nv-1 || G->aereoporti[v]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &v);
+        }
+
+        printf("\nInserisci il costo: ");
+        fflush(stdin);
+        scanf("%d", &costo);
+        while(costo <= 0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &costo);
+        }
+
+        printf("\nInserisci la distanza: ");
+        fflush(stdin);
+        scanf("%d", &distanza);
+        while(distanza <= 0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &distanza);
+        }
+
+        aggiungiArcoGrafoPrincipale(G, u, v, costo, distanza, 0);
+        salvaGrafo(G);
+    }
+
+    if(mode == 2)
+    {
+        stampaGrafoPrincipale(G);
+
+        for(i=0; i<G->nv; i++)
+        {
+            if(G->stazioni[i])
+               printf("%d - %s\n", i, G->nomiCitta[i]);
+        }
+
+        printf("\nInserisci il vertice di partenza: ");
+        fflush(stdin);
+        scanf("%d", &u);
+        while(u < 0 || u > G->nv-1 || G->stazioni[u]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &u);
+        }
+
+        printf("\nInserisci il vertice di arrivo: ");
+        fflush(stdin);
+        scanf("%d", &v);
+        while(v < 0 || v > G->nv-1 || G->stazioni[v]==0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &v);
+        }
+
+        printf("\nInserisci il costo: ");
+        fflush(stdin);
+        scanf("%d", &costo);
+        while(costo <= 0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &costo);
+        }
+
+        printf("\nInserisci la distanza: ");
+        fflush(stdin);
+        scanf("%d", &distanza);
+        while(distanza <= 0)
+        {
+            printf("Valore inserito non valido! Inserisci il valore: ");
+            fflush(stdin);
+            scanf("%d", &distanza);
+        }
+
+        aggiungiArcoGrafoPrincipale(G, u, v, costo, distanza, 1);
+        salvaGrafo(G);
+    }
 
 }
+
+
+
+
+
+
+
+
+
