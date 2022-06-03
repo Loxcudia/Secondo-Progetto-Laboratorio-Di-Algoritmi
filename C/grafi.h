@@ -26,6 +26,7 @@ typedef struct grafoPrincipale
 typedef struct arcoLuogo
 {
     int key;
+    int weight;
     struct arcoLuogo* next;
 }t_luogo;
 

@@ -3,7 +3,7 @@
 #include <stdlib.h> 
 #include "utenti.h"
 #define _CRT_SECURE_NO_WARNINGS
-
+int NOTIFICA_ADMIN;
 //DEFINZIONE FUNZIONI
 Utente registrazioneUtente() {
 	FILE* f;
@@ -119,7 +119,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 			printf("-0 Viaggio in aereo\n-1 Viaggio in treno\n");
 			int boh;
 			scanf("%d", &boh);
-			if (boh != 0 && boh != 2)
+			if (boh != 0 && boh != 1)
 			{
 				printf("Errore\n");
 				continue;
@@ -130,35 +130,9 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 			printf("E da dove parti?\n");
 			scanf("%s", &partenza);
 			int arr, part;
+			int keyPartenza, keyArrivo;
 			int modalita;
-			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
-			scanf("%d", &modalita);
-			if (modalita != 0 && modalita != 1)
-			{
-				printf("Errore\n");
-				continue;
-			}
 			if (boh == 0)
-			{
-				for (int i = 0; i < G->nv; i++)
-				{
-					if (strcmp(G->nomiCitta[i], "") == 0)
-						break;
-					if (G->aereoporti[i] == 1)
-					{
-						if (strcmp(G->nomiCitta[i], arrivo) == 0)
-							arr = i;
-						if (strcmp(G->nomiCitta[i], partenza) == 0)
-							part = i;
-					}
-				}
-                dijkstraGenerico(G, part, arr, modalita);
-				printf("Alberghi della citta:\n");
-				for (int i = 0; i < GC[arr]->nv; i++)
-					printf("%s\n", GC[arr]->nomeAlberghi[i]);
-
-			}
-			else if (boh == 1)
 			{
 				printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
 				scanf("%d", &modalita);
@@ -171,15 +145,84 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 				{
 					if (strcmp(G->nomiCitta[i], "") == 0)
 						break;
+					if (G->aereoporti[i] == 1)
+					{
+						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						{
+							arr = i;
+							keyArrivo = i;
+						}
+							
+						if (strcmp(G->nomiCitta[i], partenza) == 0)
+						{
+							part = i;
+							keyPartenza = i;
+						}
+					}
+				}
+				int dijkstra;
+                dijkstra = dijkstraGenerico(G, part, arr, modalita);
+				if (dijkstra == 0)
+				{
+					int x;
+					printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+					scanf("%d", &x);
+					if (x == 1)
+					{
+						NOTIFICA_ADMIN = 1;
+						inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+						printf("Aggiunto!\n");
+					}
+					else
+						printf("Non aggiunto\n");
+				}
+				printf("Alberghi della citta:\n");
+				for (int i = 0; i < GC[arr]->nv; i++)
+					printf("%s\n", GC[arr]->nomeAlberghi[i]);
+
+			}
+			else if (boh == 1)
+			{
+				printf("Vuoi:\n-2 Viaggiare piu economicamente\n-3 Piu velocemente?\n");
+				scanf("%d", &modalita);
+				if (modalita != 2 && modalita != 3)
+				{
+					printf("Errore\n");
+					continue;
+				}
+				for (int i = 0; i < G->nv; i++)
+				{
+					if (strcmp(G->nomiCitta[i], "") == 0)
+						break;
 					if (G->stazioni[i] == 1)
 					{
 						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						{
 							arr = i;
+							keyArrivo = i;
+						}
 						if (strcmp(G->nomiCitta[i], partenza) == 0)
+						{
 							part = i;
+							keyPartenza = i;
+						}
 					}
 				}
-                dijkstraGenerico(G, part, arr, modalita);
+				int dijkstra = dijkstraGenerico(G, part, arr, modalita);
+				if (dijkstra == 0)
+				{
+					int x;
+					printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+					scanf("%d", &x);
+					if (x == 1)
+					{
+						NOTIFICA_ADMIN = 1;
+						inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+						printf("Aggiunto!\n");
+					}
+					else
+						printf("Non aggiunto\n");
+				}
 				printf("Alberghi della citta:\n");
 				for (int i = 0; i < GC[arr]->nv; i++)
 					printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -205,12 +248,32 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 				if (G->aereoporti[i] == 1)
 				{
 					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+					{
 						arr = i;
+						keyArrivo = i;
+					}
 					if (strcmp(G->nomiCitta[i], partenza) == 0)
+					{
 						part = i;
+						keyPartenza = i;
+					}	
 				}
 			}
-            dijkstraGenerico(G, part, arr, modalita);
+			int dijkstra = dijkstraGenerico(G, part, arr, modalita);
+			if (dijkstra == 0)
+			{
+				int x;
+				printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+				scanf("%d", &x);
+				if (x == 1)
+				{
+					NOTIFICA_ADMIN = 1;
+					inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyPartenza);
+					printf("Aggiunto!\n");
+				}
+				else
+					printf("Non aggiunto\n");
+			}
 			printf("Alberghi della citta:\n");
 			for (int i = 0; i < GC[arr]->nv; i++)
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -235,12 +298,33 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 				if (G->stazioni[i] == 1)
 				{
 					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+					{
 						arr = i;
+						keyArrivo = i;
+					}
+						
 					if (strcmp(G->nomiCitta[i], partenza) == 0)
+					{
 						part = i;
+						keyPartenza = i;
+					}
 				}
 			}
-            dijkstraGenerico(G, part, arr, modalita);
+			dijkstra = dijkstraGenerico(G, part, arr, modalita);
+			if (dijkstra == 0)
+			{
+				int x;
+				printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+				scanf("%d", &x);
+				if (x == 1)
+				{
+					NOTIFICA_ADMIN = 1;
+					inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+					printf("Aggiunto!\n");
+				}
+				else
+					printf("Non aggiunto\n");
+			}
 			printf("Alberghi della citta:\n");
 			for (int i = 0; i < GC[arr]->nv; i++)
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
@@ -274,6 +358,47 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 
 	printf("***************** MENU ADMIN *****************\n\nCiao, %s", user.username);
 	while (1) {
+		if (NOTIFICA_ADMIN == 1)
+		{
+			int x;
+			printf("Notifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n");
+			mostraCodaAttesa(codaUtenti);
+			printf("Vuoi renderle disponibili? (No significa eliminarle)\n-0 Sì\n-1 No\n");
+			scanf("%d", &x);
+			if (x == 1)
+			{
+				if (codaUtenti)
+				{
+					codaAttesa* tmp = codaUtenti;
+					while (tmp)
+					{
+						int c, d;
+						printf("Destinazione: %s non raggiungibile da Arrivo: %s\n");
+						printf("Inserisci il costo:\n");
+						scanf("%d", &c);
+						printf("Inserisci la distanza: \n");
+						scanf("%d", &d);
+						aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
+						tmp = tmp->next;
+					}
+				}
+			}
+			else
+			{
+				printf("OK, procedo con l'eliminazione\n");
+				NOTIFICA_ADMIN = 0;
+				if (codaUtenti)
+				{
+					codaAttesa* tmp = codaUtenti;
+					while (tmp)
+					{
+						rimuoviArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, tmp->aot);
+						printf("Meta %s eliminata\n", tmp->cittaArrivo);
+						tmp = tmp->next;
+					}
+				}
+			}
+		}
         printf("\nOpzioni possibili:\n\n0 - Mostra tutti i viaggi possibili\n1 - Mostra tutte le citta' disponibili\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno\n4 - Mostra mete in attesa"
                "\n5 - Aggiungi arco\n6 - Rimuovi arco \n7 - Logout\n\nInserire il valore: ");
 		fflush(stdin);
@@ -286,40 +411,40 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 		}
 
 		switch (scelta) {
-		case 0:
-            system("cls||clear");
-            printf("Mostro tutti i viaggi disponibili: \n");
-			stampaGrafoPrincipale(G);
-			break;
-		case 1:
-            system("cls||clear");
-            printf("Mostra tutte le citta' disponibili");
-			stampaGrafoCitta(GC, 2, G->nv);
-			break;
-		case 2:
-            system("cls||clear");
-            printf("il numero e' due\n");
-			break;
-		case 3:
-            system("cls||clear");
-            printf("il numero e' tre\n");
-			break;
-		case 4:
-            system("cls||clear");
-			printf("Sono 4");
-			break;
-        case 5:
-            system("cls||clear");
-            aggiungiArcoMenu(G);
-            break;
-        case 6:
-            system("cls||clear");
-            rimuoviArcoMenu(G);
-            break;
-        case 7:
-            system("cls||clear");
-            printf("Arrivederci, %s :'(\n", user.username);
-			return;
+			case 0:
+				system("cls||clear");
+				printf("Mostro tutti i viaggi disponibili: \n");
+				stampaGrafoPrincipale(G);
+				break;
+			case 1:
+				system("cls||clear");
+				printf("Mostra tutte le citta' disponibili");
+				stampaGrafoCitta(GC, 2, G->nv);
+				break;
+			case 2:
+				system("cls||clear");
+				printf("il numero e' due\n");
+				break;
+			case 3:
+				system("cls||clear");
+				printf("il numero e' tre\n");
+				break;
+			case 4:
+				system("cls||clear");
+				printf("Sono 4");
+				break;
+			case 5:
+				system("cls||clear");
+				aggiungiArcoMenu(G);
+				break;
+			case 6:
+				system("cls||clear");
+				rimuoviArcoMenu(G);
+				break;
+			case 7:
+				system("cls||clear");
+				printf("Arrivederci, %s :'(\n", user.username);
+				return;
 		}
 	}   
 }
@@ -546,10 +671,10 @@ void aggiungiArcoMenu(t_grafoP* G)
 }
 
 
-void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot) {
+void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo) {
 	if (codaUtente == NULL) {
 		printf("SONO NULL CODA");
-		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot);
+		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
 	}
 		
 	else {
@@ -572,7 +697,7 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 		while (!boolean && p != NULL) {
 			p = p->next;
 			if (p->next == NULL) {
-				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot);
+				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
 				boolean = 1;
 			}
 		}
@@ -580,7 +705,7 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 
 }
 
-codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot)
+codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo)
 {
 	puts(partenza);
 	codaAttesa* coda = NULL;
@@ -589,7 +714,8 @@ codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* p
 	coda->utenti[0] = user;
 	coda->cittaArrivo = (char*)malloc(100 * sizeof(char));
 	coda->cittaPartenza = (char*)malloc(100 * sizeof(char));
-
+	coda->keyPartenza = keyPartenza;
+	coda->keyArrivo = keyArrivo;
 	for (int i = 1; i < 100; i++)
 		coda->utenti[i].isAdmin = 3;
 

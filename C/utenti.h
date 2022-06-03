@@ -21,6 +21,8 @@ typedef struct Coda {
     Utente utenti[100];
     char* cittaPartenza;
     char* cittaArrivo;
+    int keyPartenza;
+    int keyArrivo;
     int aot; //Aereo 0 o Treno 1, 2 se il suo stato è variato da non disponibile a disponibile (e viceversa. Da notificare all'utente).
     struct Coda* next;
 } codaAttesa;
@@ -33,8 +35,8 @@ void menuUtente(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti)
 void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC, codaAttesa *codaUtenti);  //mostra menu Admin
 void aggiungiArcoMenu(t_grafoP *G); //menu per l'aggiunta di un arco al grafo principale
 void rimuoviArcoMenu(t_grafoP *G); //menu per la rimozione di un arco
-void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot);
-codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot);
+void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
+codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
 void mostraCodaAttesa(codaAttesa* codaUtente);
 
 #endif 

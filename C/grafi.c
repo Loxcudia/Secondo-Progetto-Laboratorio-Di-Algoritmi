@@ -506,8 +506,8 @@ int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti
     if(pi[meta] == -1)
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un aereo\n", G->nomiCitta[meta], G->nomiCitta[s]);
-		puts(G->nomiCitta[s]);
-		inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
+		//puts(G->nomiCitta[s]);
+		//inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
         return 0;
     }
 
@@ -868,6 +868,7 @@ void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)
 	else
 	{
 		nuovo->key = key;
+		nuovo->weight = 1;
 		nuovo->next = NULL;
 
 		if (G->adj[i] == NULL)
