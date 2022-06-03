@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #ifndef GRAFI_H
 #define GRAFI_H
 
@@ -56,5 +57,6 @@ t_grafoP* leggiNomiCitta(t_grafoP* G);
 void stampaCitta(t_grafoC* G);
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key);
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode);
+int verificaRaggiungibile();
 
 #endif // GRAFI_H

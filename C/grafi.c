@@ -4,6 +4,7 @@
 #include <limits.h>
 #include "grafi.h"
 #include "liste.h"
+#include "utenti.h"
 
 void aggiungiArcoGrafoPrincipale(t_grafoP* G, int u, int v, int costo, int distanza, int mode)
 {
@@ -167,6 +168,7 @@ t_grafoP* leggiGrafo()
 	fclose(fileGrafo);
 
 	G = leggiNomiCitta(G);
+	
 
 	return G;
 }
@@ -462,7 +464,7 @@ void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 }
 
 
-int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
+int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
 {
 	int* d;
 	int* pi;
@@ -503,13 +505,15 @@ int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 
     if(pi[meta] == -1)
     {
-        printf("\nLa meta %s non e\' raggiungibile da %s con un aereo", G->nomiCitta[meta], G->nomiCitta[s]);
+        printf("\nLa meta %s non e\' raggiungibile da %s con un aereo\n", G->nomiCitta[meta], G->nomiCitta[s]);
+		puts(G->nomiCitta[s]);
+		inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
         return 0;
     }
 
-	for (i = 0; i < G->nv; i++)
+	/*for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug
+    //^for da eliminare, tenuto solo per debug*/
 
 
     prec = meta;
@@ -525,7 +529,7 @@ int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
     return 1;
 }
 
-int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
+int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
 {
 	int* d;
 	int* pi;
@@ -567,11 +571,12 @@ int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
     if(pi[meta] == -1)
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un aereo", G->nomiCitta[meta], G->nomiCitta[s]);
+		//pushCoda(G->nomiCitta[meta], G->nomiCitta[s]);
         return 0;
     }
 
     for (i = 0; i < G->nv; i++)
-        printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+        printf("\nd[%d] = %3d, pi[%d] = %3d\n", i, d[i], i, pi[i]);
     //^for da eliminare, tenuto solo per debug
 
 
@@ -588,7 +593,7 @@ int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
     return 1;
 }
 
-int dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
+int dijkstraStazioniCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
 {
 	int* d;
 	int* pi;
@@ -651,7 +656,7 @@ int dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
     return 1;
 }
 
-int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
+int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
 {
 	int* d;
 	int* pi;
@@ -714,23 +719,23 @@ int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
     return 1;
 }
 
-int dijkstraGenerico(t_grafoP* G, int s, int meta, int mode)
+int dijkstraGenerico(t_grafoP* G, int s, int meta, int mode, codaAttesa* codaUtenti, Utente user)
 {
 	switch (mode) {
 	case(0):
-        return dijkstraAereoportiCosto(G, s, meta);
+        return dijkstraAereoportiCosto(G, s, meta, codaUtenti, user);
 		break;
 
 	case(1):
-        return dijkstraAereoportiDistanza(G, s, meta);
+        return dijkstraAereoportiDistanza(G, s, meta, codaUtenti, user);
 		break;
 
 	case(2):
-        return dijkstraStazioniCosto(G, s, meta);
+        return dijkstraStazioniCosto(G, s, meta, codaUtenti, user);
 		break;
 
 	case(3):
-        return dijkstraStazioniDistanza(G, s, meta);
+        return dijkstraStazioniDistanza(G, s, meta, codaUtenti, user);
 		break;
 	}
 }
@@ -793,6 +798,7 @@ t_grafoC** leggiGrafoCitta(int nv)
 	for (i = 0; i < nv; i++)
 	{
 		fscanf(fp, "%d", &verticiCitta);
+		printf("%d\n", verticiCitta);
 
 		if (verticiCitta == -5)
 			return GC;

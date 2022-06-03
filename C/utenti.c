@@ -100,7 +100,7 @@ Utente loginUtente() {
 	}
 }
 
-void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
+void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti) {
 	int scelta;
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
@@ -216,7 +216,6 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
 			break;
 		case 2:
-			printf("il numero e' uno\n");
 			stampaGrafoPrincipale(G);
 			printf("Quale meta vuoi raggiungere?\n");
 			scanf("%s", &arrivo);
@@ -247,6 +246,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 				printf("%s\n", GC[arr]->nomeAlberghi[i]);
 			break;
 		case 3:
+			mostraCodaAttesa(codaUtenti);
 			break;
 		case 4:
             printf("Arrivederci, %s :'(\n", user.username);
@@ -255,7 +255,7 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC) {
 	}
 }
 
-void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC) {
+void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) {
 	int scelta;
 
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
@@ -268,7 +268,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC) {
 		scanf("%d", &scelta);
 	}
 	if (scelta) {
-		menuUtente(user, G, GC);
+		menuUtente(user, G, GC, codaUtenti);
 		return;
 	}
 
@@ -545,6 +545,75 @@ void aggiungiArcoMenu(t_grafoP* G)
 
 }
 
+
+void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot) {
+	if (codaUtente == NULL) {
+		printf("SONO NULL CODA");
+		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot);
+	}
+		
+	else {
+		int boolean = 0;
+		codaAttesa* p = codaUtente;
+		while (p != NULL) {
+			if (!strcmp(partenza, p->cittaPartenza) && !strcmp(destinazione, p->cittaArrivo)) {
+				for (int i = 0; i < 100; i++) {
+					if (p->utenti[i].isAdmin != 0 && p->utenti[i].isAdmin != 1 && !strcmp(p->utenti[i].username, user.username)) {
+						p->utenti[i] = user;
+						return;
+					}
+				}
+				boolean = 1;
+			}
+			if(p->next != NULL)
+				p = p->next;
+		}
+		p = codaUtente;
+		while (!boolean && p != NULL) {
+			p = p->next;
+			if (p->next == NULL) {
+				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot);
+				boolean = 1;
+			}
+		}
+	}
+
+}
+
+codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot)
+{
+	puts(partenza);
+	codaAttesa* coda = NULL;
+	coda = (codaAttesa*)malloc(sizeof(codaAttesa));
+	coda->next = NULL;
+	coda->utenti[0] = user;
+	coda->cittaArrivo = (char*)malloc(100 * sizeof(char));
+	coda->cittaPartenza = (char*)malloc(100 * sizeof(char));
+
+	for (int i = 1; i < 100; i++)
+		coda->utenti[i].isAdmin = 3;
+
+	strcpy(coda->cittaArrivo, destinazione);
+	strcpy(coda->cittaPartenza, partenza);
+	coda->aot = aot;
+	return coda;
+}
+
+void mostraCodaAttesa(codaAttesa* codaUtente) {
+	if (codaUtente == NULL) {
+		printf("Nessuna meta presente nella coda.");
+		return;
+	}
+
+	codaAttesa* p = codaUtente;
+	while (p != NULL) {
+		printf("Utenti in attesa per la meta %s partendo da %s in aereo:\n", p->cittaArrivo, p->cittaPartenza);
+		for (int i = 0; i < 100; i++) {
+			printf("%s \n", p->utenti->username);
+		}
+		p = p->next;
+	}
+}
 
 
 

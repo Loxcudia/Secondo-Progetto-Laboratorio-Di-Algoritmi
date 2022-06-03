@@ -3,6 +3,7 @@
 #include "grafi.h"
 #include "utenti.h"
 #include "liste.h"
+
 int main()
 {
 	int scelta;
@@ -10,6 +11,7 @@ int main()
 	Utente user;
 	t_grafoP* G = NULL;
 	t_grafoC** GC = NULL;
+	codaAttesa *codaUtenti = NULL; //oppure codaAttesa = leggiCodaFile();
 
 	G = leggiGrafo();
 	GC = leggiGrafoCitta(G->nv);
@@ -28,6 +30,6 @@ int main()
 	else user = registrazioneUtente();
 
 	printf("\nCiao, %s\n\n", user.username);
-	if (user.isAdmin) menuAdmin(user, G, GC);
-	else menuUtente(user, G, GC);
+	if (user.isAdmin) menuAdmin(user, G, GC, codaUtenti);
+	else menuUtente(user, G, GC, codaUtenti);
 }
