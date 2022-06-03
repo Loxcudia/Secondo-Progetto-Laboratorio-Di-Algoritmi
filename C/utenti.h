@@ -38,5 +38,15 @@ void rimuoviArcoMenu(t_grafoP *G); //menu per la rimozione di un arco
 void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
 codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
 void mostraCodaAttesa(codaAttesa* codaUtente);
+void prenotaViaggio(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti);
+void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti);
+void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti);
+void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, int mode);
+void modificaCittaMenu(t_grafoP* G, t_grafoC **GC);
+void toggleAeroporto(t_grafoP* G);
+void toggleStazione(t_grafoP* G);
+void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G);
+
 
 #endif 
+

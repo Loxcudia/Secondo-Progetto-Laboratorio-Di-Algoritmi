@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
+#include "liste.h"
 
 #ifndef GRAFI_H
 #define GRAFI_H
@@ -49,15 +47,18 @@ t_grafoP* leggiGrafo();
 void salvaGrafo(t_grafoP* G);
 void salvaGrafoCitta(t_grafoC** C, int);
 t_grafoC** leggiGrafoCitta(int nv);
-int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta);
-int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta);
-int dijkstraStazioniCosto(t_grafoP* G, int s, int meta);
-int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta);
-int dijkstraGenerico(t_grafoP* G, int s, int meta, int mode);
+t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta);
+t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta);
+t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta);
+t_lista* dijkstraStazioniDistanza(t_grafoP* G, int s, int meta);
+t_lista* dijkstraGenerico(t_grafoP* G, int s, int meta, int mode);
 t_grafoP* leggiNomiCitta(t_grafoP* G);
 void stampaCitta(t_grafoC* G);
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key);
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode);
 int verificaRaggiungibile();
+void stampaNomiCitta(t_grafoP* G, int mode);
+void stampaAlberghi(t_grafoC* GC);
+t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo);
 
 #endif // GRAFI_H

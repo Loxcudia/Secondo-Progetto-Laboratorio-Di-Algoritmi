@@ -1,0 +1,221 @@
+
+			stampaGrafoPrincipale(G);
+			printf("-0 Viaggio in aereo\n-1 Viaggio in treno\n");
+			int boh;
+			scanf("%d", &boh);
+			if (boh != 0 && boh != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			printf("Quale meta vuoi raggiungere?\n");
+			char arrivo[20], partenza[20];
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			int arr, part;
+			int keyPartenza, keyArrivo;
+			int modalita;
+            if (boh == 0)
+			{
+				printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+				scanf("%d", &modalita);
+				if (modalita != 0 && modalita != 1)
+				{
+					printf("Errore\n");
+					continue;
+				}
+				for (int i = 0; i < G->nv; i++)
+				{
+					if (strcmp(G->nomiCitta[i], "") == 0)
+						break;
+					if (G->aereoporti[i] == 1)
+					{
+						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						{
+							arr = i;
+							keyArrivo = i;
+						}
+
+						if (strcmp(G->nomiCitta[i], partenza) == 0)
+						{
+							part = i;
+							keyPartenza = i;
+						}
+					}
+				}
+			    dijkstra = dijkstraGenerico(G, part, arr, modalita);
+				if (dijkstra == 0)
+				{
+					int x;
+					printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+					scanf("%d", &x);
+					if (x == 1)
+					{
+						NOTIFICA_ADMIN = 1;
+						inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+						printf("Aggiunto!\n");
+					}
+					else
+						printf("Non aggiunto\n");
+				}
+				printf("Alberghi della citta:\n");
+				for (int i = 0; i < GC[arr]->nv; i++)
+					printf("%s\n", GC[arr]->nomeAlberghi[i]);
+
+			}
+			else if (boh == 1)
+			{
+				printf("Vuoi:\n-2 Viaggiare piu economicamente\n-3 Piu velocemente?\n");
+				scanf("%d", &modalita);
+				if (modalita != 2 && modalita != 3)
+				{
+					printf("Errore\n");
+					continue;
+				}
+				for (int i = 0; i < G->nv; i++)
+				{
+					if (strcmp(G->nomiCitta[i], "") == 0)
+						break;
+					if (G->stazioni[i] == 1)
+					{
+						if (strcmp(G->nomiCitta[i], arrivo) == 0)
+						{
+							arr = i;
+							keyArrivo = i;
+						}
+						if (strcmp(G->nomiCitta[i], partenza) == 0)
+						{
+							part = i;
+							keyPartenza = i;
+						}
+					}
+				}
+				dijkstra = dijkstraGenerico(G, part, arr, modalita);
+				if (dijkstra == NULL)
+				{
+					int x;
+					printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+					scanf("%d", &x);
+					if (x == 1)
+					{
+						NOTIFICA_ADMIN = 1;
+						inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+						printf("Aggiunto!\n");
+					}
+					else
+						printf("Non aggiunto\n");
+				}
+				printf("Alberghi della citta:\n");
+				for (int i = 0; i < GC[arr]->nv; i++)
+					printf("%s\n", GC[arr]->nomeAlberghi[i]);
+			}
+			break;
+			case 1:
+			stampaGrafoPrincipale(G);
+			printf("Quale meta vuoi raggiungere?\n");
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+			scanf("%d", &modalita);
+			if (modalita != 0 && modalita != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			for (int i = 0; i < G->nv; i++)
+			{
+				if (strcmp(G->nomiCitta[i], "") == 0)
+					break;
+				if (G->aereoporti[i] == 1)
+				{
+					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+					{
+						arr = i;
+						keyArrivo = i;
+					}
+					if (strcmp(G->nomiCitta[i], partenza) == 0)
+					{
+						part = i;
+						keyPartenza = i;
+					}
+				}
+			}
+			dijkstra = dijkstraGenerico(G, part, arr, modalita);
+			if (dijkstra == NULL)
+			{
+				int x;
+				printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+				scanf("%d", &x);
+				if (x == 1)
+				{
+					NOTIFICA_ADMIN = 1;
+					inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyPartenza);
+					printf("Aggiunto!\n");
+				}
+				else
+					printf("Non aggiunto\n");
+			}
+			printf("Alberghi della citta:\n");
+			for (int i = 0; i < GC[arr]->nv; i++)
+				printf("%s\n", GC[arr]->nomeAlberghi[i]);
+			break;
+		case 2:
+			stampaGrafoPrincipale(G);
+			printf("Quale meta vuoi raggiungere?\n");
+			scanf("%s", &arrivo);
+			printf("E da dove parti?\n");
+			scanf("%s", &partenza);
+			printf("Vuoi:\n-0 Viaggiare piu economicamente\n-1 Piu velocemente?\n");
+			scanf("%d", &modalita);
+			if (modalita != 0 && modalita != 1)
+			{
+				printf("Errore\n");
+				continue;
+			}
+			for (int i = 0; i < G->nv; i++)
+			{
+				if (strcmp(G->nomiCitta[i], "") == 0)
+					break;
+				if (G->stazioni[i] == 1)
+				{
+					if (strcmp(G->nomiCitta[i], arrivo) == 0)
+					{
+						arr = i;
+						keyArrivo = i;
+					}
+
+					if (strcmp(G->nomiCitta[i], partenza) == 0)
+					{
+						part = i;
+						keyPartenza = i;
+					}
+				}
+			}
+			dijkstra = dijkstraGenerico(G, part, arr, modalita);
+			if (dijkstra == NULL)
+			{
+				int x;
+				printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+				scanf("%d", &x);
+				if (x == 1)
+				{
+					NOTIFICA_ADMIN = 1;
+					inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+					printf("Aggiunto!\n");
+				}
+				else
+					printf("Non aggiunto\n");
+			}
+			printf("Alberghi della citta:\n");
+			for (int i = 0; i < GC[arr]->nv; i++)
+				printf("%s\n", GC[arr]->nomeAlberghi[i]);
+			break;
+		case 3:
+			mostraCodaAttesa(codaUtenti);
+			break;
+		case 4:
+            printf("Arrivederci, %s :'(\n", user.username);
+			return;
+		}

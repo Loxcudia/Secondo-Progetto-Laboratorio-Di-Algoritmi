@@ -13,6 +13,8 @@ int main()
 	t_grafoC** GC = NULL;
 	codaAttesa *codaUtenti = NULL; //oppure codaAttesa = leggiCodaFile();
 
+    system("cls||clear");
+
 	G = leggiGrafo();
 	GC = leggiGrafoCitta(G->nv);
 	//stampaGrafoCitta(GC, 2, G->nv);

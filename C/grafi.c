@@ -111,15 +111,11 @@ t_grafoP* leggiGrafo()
 			// printf("%d ", presenza);
 		}
 
-		printf("\n");
-
 		for (i = 0; i < nv; i++)
 		{
 			fscanf(fileGrafo, "%d", &presenza);
 			G->stazioni[i] = presenza;
 		}
-
-		printf("\n");
 
 		i = 0;
 
@@ -379,10 +375,10 @@ void stampaCitta(t_grafoC* G)
 
 		if (i == 0)
 		{
-			printf("Luoghi adiacenti all'aereoporto: ");
+            printf("0 - Luoghi adiacenti all'aereoporto: ");
 			while (l != NULL)
 			{
-				printf("%s", G->nomeAlberghi[i]);
+                printf("%s", G->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
@@ -391,20 +387,20 @@ void stampaCitta(t_grafoC* G)
 
 		if (i == 1)
 		{
-			printf("Luoghi adiacenti alla stazione: ");
+            printf("1 - Luoghi adiacenti alla stazione: ");
 			while (l != NULL)
 			{
-				printf("%s", G->nomeAlberghi[i]);
+                printf("%s", G->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
 			continue;
 		}
 
-		printf("Luoghi adiacenti a %s: ", G->nomeAlberghi[i]);
+        printf("%d - Luoghi adiacenti a %s: ", i , G->nomeAlberghi[i]);
 		while (l != NULL)
 		{
-			printf("%s", G->nomeAlberghi[i]);
+            printf("%s", G->nomeAlberghi[l->key]);
 			l = l->next;
 		}
 		printf("\n");
@@ -456,15 +452,22 @@ void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 	else
 	{
 		prev = e;
-		while (prev->next->key != v)
+        while (prev != NULL && prev->next->key != v)
 			prev = prev->next;
+
+        if(prev == NULL)
+        {
+            printf("\nArco assente");
+            return;
+        }
+
 		e = prev->next;
 		prev->next = e->next;
 	}
 }
 
 
-int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
+t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
@@ -508,35 +511,38 @@ int dijkstraAereoportiCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti
         printf("\nLa meta %s non e\' raggiungibile da %s con un aereo\n", G->nomiCitta[meta], G->nomiCitta[s]);
 		//puts(G->nomiCitta[s]);
 		//inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
-        return 0;
+        return NULL;
     }
 
 	/*for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug*/
+    ^for da eliminare, tenuto solo per debug*/
 
 
     prec = meta;
 
+    t_lista* percorso = NULL;
+
     while(prec != 0)
     {
-        printf("%s <- ", G->nomiCitta[prec]);
+        //printf("%s <- ", G->nomiCitta[prec]);
+        inserimentoInTesta(&percorso, prec);
         prec = pi[prec];
     }
-    printf("%s\n\n", G->nomiCitta[prec]);
+ //   printf("%s\n\n", G->nomiCitta[prec]);
 
 
-    return 1;
+    return percorso;
 }
 
-int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
+t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
 	int i, u;
     int prec;
 	t_lista* lista = NULL;
-	t_arcoP* e;
+    t_arcoP* e;
 
 	d = (int*)calloc(sizeof(int), G->nv);
 	pi = (int*)calloc(sizeof(int), G->nv);
@@ -572,7 +578,7 @@ int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUte
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un aereo", G->nomiCitta[meta], G->nomiCitta[s]);
 		//pushCoda(G->nomiCitta[meta], G->nomiCitta[s]);
-        return 0;
+        return NULL;
     }
 
     for (i = 0; i < G->nv; i++)
@@ -582,18 +588,21 @@ int dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUte
 
     prec = meta;
 
+    t_lista *percorso = NULL;
+
     while(prec != 0)
     {
-        printf("%s <- ", G->nomiCitta[prec]);
+        //printf("%s <- ", G->nomiCitta[prec]);
+        inserimentoInTesta(&percorso, prec);
         prec = pi[prec];
     }
-    printf("%s\n\n", G->nomiCitta[prec]);
+  //      printf("%s\n\n", G->nomiCitta[prec]);
 
 
-    return 1;
+    return percorso;
 }
 
-int dijkstraStazioniCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
+t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
@@ -635,7 +644,7 @@ int dijkstraStazioniCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, 
     if(pi[meta] == -1)
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un treno", G->nomiCitta[meta], G->nomiCitta[s]);
-        return 0;
+        return NULL;
     }
 
 	for (i = 0; i < G->nv; i++)
@@ -645,18 +654,19 @@ int dijkstraStazioniCosto(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, 
 
     prec = meta;
 
+    t_lista *percorso = NULL;
+
     while(prec != 0)
     {
-        printf("%s <- ", G->nomiCitta[prec]);
+        //printf("%s <- ", G->nomiCitta[prec]);
+        inserimentoInTesta(&percorso, prec);
         prec = pi[prec];
     }
-    printf("%s\n\n", G->nomiCitta[prec]);
 
-
-    return 1;
+    return percorso;
 }
 
-int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtenti, Utente user)
+t_lista* dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
 {
 	int* d;
 	int* pi;
@@ -698,7 +708,7 @@ int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtent
     if(pi[meta] == -1)
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un treno", G->nomiCitta[meta], G->nomiCitta[s]);
-        return 0;
+        return NULL;
     }
 
 	for (i = 0; i < G->nv; i++)
@@ -708,34 +718,35 @@ int dijkstraStazioniDistanza(t_grafoP* G, int s, int meta, codaAttesa* codaUtent
 
     prec = meta;
 
+    t_lista *percorso = NULL;
+
     while(prec != 0)
     {
-        printf("%s <- ", G->nomiCitta[prec]);
+        //printf("%s <- ", G->nomiCitta[prec]);
+        inserimentoInTesta(&percorso, prec);
         prec = pi[prec];
     }
-    printf("%s\n\n", G->nomiCitta[prec]);
 
-
-    return 1;
+    return percorso;
 }
 
-int dijkstraGenerico(t_grafoP* G, int s, int meta, int mode, codaAttesa* codaUtenti, Utente user)
+t_lista* dijkstraGenerico(t_grafoP* G, int s, int meta, int mode)
 {
 	switch (mode) {
 	case(0):
-        return dijkstraAereoportiCosto(G, s, meta, codaUtenti, user);
+        return dijkstraAereoportiCosto(G, s, meta);
 		break;
 
 	case(1):
-        return dijkstraAereoportiDistanza(G, s, meta, codaUtenti, user);
+        return dijkstraAereoportiDistanza(G, s, meta);
 		break;
 
 	case(2):
-        return dijkstraStazioniCosto(G, s, meta, codaUtenti, user);
+        return dijkstraStazioniCosto(G, s, meta);
 		break;
 
 	case(3):
-        return dijkstraStazioniDistanza(G, s, meta, codaUtenti, user);
+        return dijkstraStazioniDistanza(G, s, meta);
 		break;
 	}
 }
@@ -777,7 +788,7 @@ void salvaGrafoCitta(t_grafoC** C, int nv) {
 t_grafoC** leggiGrafoCitta(int nv) 
 {
 	FILE* fp;
-	int key, i, j, verticiCitta;
+    int key, i, j, k, verticiCitta;
 	char nomealbergo[20];
 	t_grafoC** GC = NULL;
 	t_luogo* arcoLuogo = NULL;
@@ -796,18 +807,14 @@ t_grafoC** leggiGrafoCitta(int nv)
 	}
 
 	for (i = 0; i < nv; i++)
-	{
-		fscanf(fp, "%d", &verticiCitta);
-		printf("%d\n", verticiCitta);
-
-		if (verticiCitta == -5)
-			return GC;
+    {
+        verticiCitta = 4;
 
 		GC[i] = (t_grafoC*)malloc(sizeof(t_grafoC));
-		GC[i]->nv = verticiCitta;
-		GC[i]->adj = (t_luogo**)malloc(verticiCitta * sizeof(t_luogo*));
+        GC[i]->nv = verticiCitta;
+        GC[i]->adj = (t_luogo**)malloc(verticiCitta * sizeof(t_luogo*));
 
-		GC[i]->nomeAlberghi = (char**)calloc(verticiCitta, sizeof(char*));
+        GC[i]->nomeAlberghi = (char**)calloc(verticiCitta, sizeof(char*));
 
 		for (j = 0; j < verticiCitta; j++)
 		{
@@ -828,7 +835,6 @@ t_grafoC** leggiGrafoCitta(int nv)
 			if (key == -2)
 				break;
 
-
 			aggiungiArcoGrafoCitta(GC[i], j, key);
 		}
 
@@ -836,10 +842,10 @@ t_grafoC** leggiGrafoCitta(int nv)
 		strcpy(GC[i]->nomeAlberghi[1], "Stazioni");
 
 
-		for (j = 2; j < verticiCitta; j++)
-		{
-			fscanf(fp, "%s", nomealbergo);
-			strcpy(GC[i]->nomeAlberghi[j], nomealbergo);
+        for (k = 2; k < j; k++)
+        {
+            fscanf(fp, "%s", nomealbergo);
+            strcpy(GC[i]->nomeAlberghi[k], nomealbergo);
 		}
 	}
 
@@ -852,8 +858,6 @@ t_grafoC** leggiGrafoCitta(int nv)
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)
 {
 	t_luogo* nuovo, * e;
-
-    printf("provo ad aggiungere %d %d\n", i, key);
 
 	if (i<0 || i>G->nv - 1 || key<0 || key>G->nv - 1)
 	{
@@ -975,4 +979,82 @@ void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
         }
         free(e);
     }
+}
+
+void stampaAlberghi(t_grafoC* GC)
+{
+    int i;
+
+    for(i=2; i<GC->nv; i++)
+        printf("%s\n", GC->nomeAlberghi[i]);
+
+    printf("\n");
+
+}
+
+t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo)
+{
+    int* d;
+    int* pi;
+    int i, u;
+    int prec;
+    t_lista* lista = NULL;
+    t_luogo* e;
+
+    d = (int*)calloc(sizeof(int), GC->nv);
+    pi = (int*)calloc(sizeof(int), GC->nv);
+
+    for (i = 0; i < GC->nv; i++)
+    {
+        d[i] = UINT_MAX;
+        pi[i] = -1;
+    }
+
+    d[mode] = 0;
+
+    for (i = 0; i < GC->nv; i++)
+        inserimentoInTesta(&lista, i);
+
+    while (lista != NULL)
+    {
+        u = estraiMinimo(&lista, d);
+        e = GC->adj[u];
+
+        while (e != NULL)
+        {
+            if (d[e->key] == UINT_MAX || d[e->key] > d[u] + e->weight)
+            {
+                pi[e->key] = u;
+                d[e->key] = d[u] + e->weight;
+            }
+            e = e->next;
+        }
+    }
+
+    if(pi[albergo] == -1)
+    {
+        printf("\nL'albergo %s non e\' raggiungibile da %s\n", GC->nomeAlberghi[albergo], GC->nomeAlberghi[mode]);
+        //puts(G->nomiCitta[s]);
+        //inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
+        return NULL;
+    }
+
+    /*for (i = 0; i < G->nv; i++)
+        printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
+    //^for da eliminare, tenuto solo per debug*/
+
+
+    prec = albergo;
+
+    t_lista* strada = NULL;
+
+    while(prec != 0)
+    {
+        //printf("%s <- ", G->nomiCitta[prec]);
+        inserimentoInTesta(&strada, prec);
+        prec = pi[prec];
+    }
+    printf("%s\n\n", GC->nomeAlberghi[prec]);
+
+    return strada;
 }
