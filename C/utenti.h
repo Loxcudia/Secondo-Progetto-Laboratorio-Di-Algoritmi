@@ -46,7 +46,9 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC);
 void toggleAeroporto(t_grafoP* G);
 void toggleStazione(t_grafoP* G);
 void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G);
-
-
+codaAttesa* caricaCoda();
+void salvaCoda(codaAttesa* coda);
+codaAttesa* accodaNodo(codaAttesa* testa, codaAttesa* nodo);
+int notificaUtente(codaAttesa* coda, char* username);
 #endif 
 

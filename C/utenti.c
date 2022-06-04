@@ -110,6 +110,9 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
     t_lista* dijkstra = NULL;
 
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
+    if (notificaUtente(codaUtenti, user.username)) 
+        printf("Una delle tue mete in attesa e' diventata disponibile!");
+    
 	while (1) {
         printf("\nOpzioni possibili:\n\n0 - Mostra tutte le mete possibili\n1 - Mostra citta con aeroporti\n2 - Mostra citta con stazioni"
                "\n3 - Prenota un viaggio\n4 - Logout\n\nInserire il valore: ");
@@ -643,7 +646,7 @@ void aggiungiArcoMenu(t_grafoP* G)
 void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo) {
 	if (codaUtente == NULL) {
 		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
-        mostraCodaAttesa(codaUtente);
+        
 	}
 		
 	else {
@@ -667,6 +670,7 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 			p = p->next;
 			if (p->next == NULL) {
 				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
+                salvaCoda(p->next);
 				boolean = 1;
 			}
 		}
@@ -685,7 +689,7 @@ codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* p
 	coda->keyPartenza = keyPartenza;
 	coda->keyArrivo = keyArrivo;
 	for (int i = 1; i < 100; i++)
-		coda->utenti[i].isAdmin = 3;
+		coda->utenti[i].isAdmin = -1;
 
 	strcpy(coda->cittaArrivo, destinazione);
 	strcpy(coda->cittaPartenza, partenza);
@@ -703,14 +707,13 @@ void mostraCodaAttesa(codaAttesa* codaUtente) {
 	while (p != NULL) {
 		printf("Utenti in attesa per la meta %s partendo da %s in aereo:\n", p->cittaArrivo, p->cittaPartenza);
 		for (int i = 0; i < 100; i++) {
-            if (p->utenti[i].isAdmin != 3)
-                printf("%s \n", p->utenti->username);
+            if (p->utenti[i].isAdmin >= 0)
+                printf("%s \n", p->utenti[i].username);
             else continue;
 		}
 		p = p->next;
 	}
 }
-
 
 void prenotaViaggio(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti)
 {
@@ -976,6 +979,89 @@ void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G
 
 }
 
+codaAttesa* caricaCoda() {
+    codaAttesa* coda = NULL;
+    FILE* fp;
+    codaAttesa* e = NULL;
+    codaAttesa* testa = e;
+    int c = 0, i;
 
+    fp = fopen("coda.txt", "r");
+    if (fp == NULL) {
+        printf("\nIl file 'coda.txt' non esiste.\n");
+        return e;
+    }
+    else {
+        while(!feof(fp)) {
+            coda = (codaAttesa*)malloc(sizeof(codaAttesa));
 
+            fscanf(fp, "%d ", &c);
+            for (i = 0; i < c; i++) {
+                fscanf(fp, "%s ", coda->utenti[i].username);
+                coda->utenti[i].isAdmin = 0;
+            }
+            for (; i < 100; i++) {
+                coda->utenti[i].isAdmin = -1;
+            }
 
+            coda->cittaArrivo = (char*)malloc(sizeof(char));
+            coda->cittaPartenza = (char*)malloc(sizeof(char));
+            
+            fscanf(fp, "%s %s %d %d %d\n", coda->cittaPartenza, coda->cittaArrivo, &coda->keyPartenza, &coda->keyArrivo, &coda->aot);
+
+            
+            coda->next = NULL; 
+            e = accodaNodo(e, coda);        
+        }
+
+        fclose(fp);
+        return e;
+    }
+    
+}
+
+codaAttesa* accodaNodo(codaAttesa* testa, codaAttesa* nodo) {
+    if (testa == NULL) {
+        testa = nodo;
+        return testa;
+    }
+    else {
+        testa->next = accodaNodo(testa->next, nodo);
+        return testa;
+    }
+}
+
+void salvaCoda(codaAttesa* coda) {
+    FILE* fp;
+    int c = 0;
+
+    fp = fopen("coda.txt", "a");
+    if (fp == NULL) {
+        printf("Il file 'coda.txt' non esiste.");
+        return;
+    }
+    else {
+        for (int i = 0; i < 100; i++) {
+            if (coda->utenti[i].isAdmin >= 0)
+                c++;
+        }
+
+        fprintf(fp, "%d ", c);
+        for (int i = 0; i < c; i++) 
+            fprintf(fp, "%s ", coda->utenti[i].username);
+
+        fprintf(fp, "%s %s %d %d %d\n", coda->cittaPartenza, coda->cittaArrivo, coda->keyPartenza, coda->keyArrivo, coda->aot);
+        fclose(fp);
+    }
+}
+
+int notificaUtente(codaAttesa* coda, char* username) {
+    for (codaAttesa* p = coda; p != NULL; p = p->next) {
+        for (int i = 0; i < 100; i++) {
+            if (!strcmp(p->utenti[i].username, username) && p->utenti[i].isAdmin >= 0 && p->aot == 2)
+                return 1;
+        }
+    }
+
+    return 0;
+}
