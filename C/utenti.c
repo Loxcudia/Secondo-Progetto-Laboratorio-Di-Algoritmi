@@ -642,8 +642,8 @@ void aggiungiArcoMenu(t_grafoP* G)
 
 void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo) {
 	if (codaUtente == NULL) {
-		printf("SONO NULL CODA");
 		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
+        mostraCodaAttesa(codaUtente);
 	}
 		
 	else {
@@ -676,7 +676,6 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 
 codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo)
 {
-	puts(partenza);
 	codaAttesa* coda = NULL;
 	coda = (codaAttesa*)malloc(sizeof(codaAttesa));
 	coda->next = NULL;
@@ -704,7 +703,9 @@ void mostraCodaAttesa(codaAttesa* codaUtente) {
 	while (p != NULL) {
 		printf("Utenti in attesa per la meta %s partendo da %s in aereo:\n", p->cittaArrivo, p->cittaPartenza);
 		for (int i = 0; i < 100; i++) {
-			printf("%s \n", p->utenti->username);
+            if (p->utenti[i].isAdmin != 3)
+                printf("%s \n", p->utenti->username);
+            else continue;
 		}
 		p = p->next;
 	}

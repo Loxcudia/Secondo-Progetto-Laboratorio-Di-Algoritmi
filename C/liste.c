@@ -107,3 +107,13 @@ void stampaLista(t_lista* lista) {
 		printf("\n");
 	}
 }
+
+void stampaPercorso(t_lista* lista) {
+	if (!lista) {
+		return;
+	}
+	else {
+		stampaPercorso(lista->next);
+		printf("%d -> ", lista->data);
+	}
+}
