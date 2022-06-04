@@ -28,6 +28,50 @@ void inserimentoInTesta(t_lista** L, int data)
 	}
 }
 
+int inserimentoInPercorso(t_lista** L, int data)
+{
+    if (*L == NULL)
+    {
+        t_lista* tmp = NULL;
+
+        tmp = (t_lista*)malloc(sizeof(t_lista));
+
+        if (tmp == NULL) {
+            printf("Allocazione fallita\n");
+            return 0;
+        }
+
+        tmp->data = data;
+        tmp->next = NULL;
+
+        *L = tmp;
+        return 1;
+    }
+
+    if((*L)->data == data)
+        return 0;
+
+    if((*L)->next == NULL)
+    {
+        t_lista* tmp = NULL;
+
+        tmp = (t_lista*)malloc(sizeof(t_lista));
+
+        if (tmp == NULL) {
+            printf("Allocazione fallita\n");
+            return 0;
+        }
+
+        tmp->data = data;
+        tmp->next = NULL;
+        (*L)->next = tmp;
+        return 1;
+    }
+
+    return inserimentoInPercorso(&(*L)->next, data);
+}
+
+
 int estraiMinimo(t_lista** lista, int* d)
 {
 	t_lista* p, * pmin, * prec = NULL, * precmin = NULL;

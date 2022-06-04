@@ -746,11 +746,11 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     t_lista* percorso = NULL;
 
     stampaNomiCitta(G, 0);
-    printf("Dove ti trovi?\nInserire il nome della citta\': ");
+    printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
     fflush(stdin);
 
-    printf("Quale meta vuoi raggiungere?\nInserire il nome della citta\': ");
+    printf("\n\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
     scanf("%s", arrivo);
     fflush(stdin);
 
@@ -770,7 +770,7 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
 
     //inserire aggiunta della meta
 
-    printf("0 - Viaggio economico\n1 - Viaggio breve\nInserire la scelta: ");
+    printf("\n0 - Viaggio economico\n1 - Viaggio breve\nInserire la scelta: ");
     scanf("%d", &mode);
     fflush(stdin);
 
@@ -782,15 +782,15 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     }
 
     if(mode == 0)
-        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 0, codaUtenti, user);
+        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 0);
 
     if(mode == 1)
-        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 1, codaUtenti, user);
+        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 1);
 
     if(percorso == NULL)
     {
         int x;
-        printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+        printf("\nMeta non raggiungibile.\n0 - Non inserirti in una coda di attesa\n1 - Inserisciti in una coda di attesa\nInserisci la scelta: ");
         scanf("%d", &x);
         if (x == 1)
         {
@@ -817,11 +817,11 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     t_lista* percorso = NULL;
 
     stampaNomiCitta(G, 1);
-    printf("Dove ti trovi?\nInserire il nome della citta\': ");
+    printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
     fflush(stdin);
 
-    printf("Quale meta vuoi raggiungere?\nInserire il nome della citta\': ");
+    printf("\n\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
     scanf("%s", arrivo);
     fflush(stdin);
 
@@ -859,7 +859,7 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     if(percorso == NULL)
     {
         int x;
-        printf("Meta non raggiungibile.\n-0 Non inserirti in una coda di attesa\n-1 Inserisciti in una coda di attesa\n");
+        printf("\nMeta non raggiungibile.\n0 - Non inserirti in una coda di attesa\n1 - Inserisciti in una coda di attesa\nInserire la scelta: ");
         scanf("%d", &x);
         if (x == 1)
         {
@@ -882,6 +882,8 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
     int i;
     char conferma;
     t_lista* strada = NULL;
+
+    printf("\n\nScelta dell'albergo:\n\n");
 
     stampaAlberghi(GC);
 

@@ -518,19 +518,18 @@ t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
     ^for da eliminare, tenuto solo per debug*/
 
-
     prec = meta;
 
     t_lista* percorso = NULL;
 
-    while(prec != 0)
+    while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
-        inserimentoInTesta(&percorso, prec);
-        prec = pi[prec];
+        if(inserimentoInPercorso(&percorso, prec) == 0)
+            return NULL;
+        else
+            prec = pi[prec];
     }
- //   printf("%s\n\n", G->nomiCitta[prec]);
-
 
     return percorso;
 }
@@ -581,23 +580,24 @@ t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
         return NULL;
     }
 
+    /*
     for (i = 0; i < G->nv; i++)
         printf("\nd[%d] = %3d, pi[%d] = %3d\n", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug
-
+    ^for da eliminare, tenuto solo per debug
+*/
 
     prec = meta;
 
     t_lista *percorso = NULL;
 
-    while(prec != 0)
+    while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
-        inserimentoInTesta(&percorso, prec);
-        prec = pi[prec];
+        if(inserimentoInPercorso(&percorso, prec) == 0)
+            return NULL;
+        else
+            prec = pi[prec];
     }
-  //      printf("%s\n\n", G->nomiCitta[prec]);
-
 
     return percorso;
 }
@@ -647,20 +647,23 @@ t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
         return NULL;
     }
 
+    /*
 	for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug
-
+    ^for da eliminare, tenuto solo per debug
+*/
 
     prec = meta;
 
     t_lista *percorso = NULL;
 
-    while(prec != 0)
+    while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
-        inserimentoInTesta(&percorso, prec);
-        prec = pi[prec];
+        if(inserimentoInPercorso(&percorso, prec) == 0)
+            return NULL;
+        else
+            prec = pi[prec];
     }
 
     return percorso;
@@ -711,20 +714,23 @@ t_lista* dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
         return NULL;
     }
 
+    /*
 	for (i = 0; i < G->nv; i++)
 		printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug
-
+    ^for da eliminare, tenuto solo per debug
+*/
 
     prec = meta;
 
     t_lista *percorso = NULL;
 
-    while(prec != 0)
+    while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
-        inserimentoInTesta(&percorso, prec);
-        prec = pi[prec];
+        if(inserimentoInPercorso(&percorso, prec) == 0)
+            return NULL;
+        else
+            prec = pi[prec];
     }
 
     return percorso;
@@ -1051,7 +1057,6 @@ t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo)
     /*for (i = 0; i < G->nv; i++)
         printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
     ^for da eliminare, tenuto solo per debug*/
-
 
     prec = albergo;
 
