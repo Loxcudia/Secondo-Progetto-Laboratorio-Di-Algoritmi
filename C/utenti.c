@@ -251,7 +251,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 				break;
 			case 4:
 				system("cls||clear");
-				printf("Sono 4");
+                mostraCodaAttesa(codaUtenti);
 				break;
 			case 5:
 				system("cls||clear");
@@ -422,7 +422,7 @@ void rimuoviArcoMenu(t_grafoP* G)
     int u, v;
     int mode;
     int i;
-
+    stampaGrafoPrincipale(G);
     printf("\n1 - Rimuovi un arco dagli aeroporti\n2 - Rimuovi un arco dalle stazioni\n3 - Annulla\n\nInserire il valore: ");
     fflush(stdin);
     scanf("%d", &mode);
@@ -438,7 +438,7 @@ void rimuoviArcoMenu(t_grafoP* G)
 
     if(mode == 1)
     {
-        stampaGrafoPrincipale(G);
+        
 
         for(i=0; i<G->nv; i++)
         {
@@ -473,7 +473,7 @@ void rimuoviArcoMenu(t_grafoP* G)
 
     if(mode == 2)
     {
-        stampaGrafoPrincipale(G);
+        
 
         for(i=0; i<G->nv; i++)
         {
@@ -515,6 +515,7 @@ void aggiungiArcoMenu(t_grafoP* G)
     int mode;
     int i;
 
+    stampaGrafoPrincipale(G);
     printf("\n1 - Aggiungi un arco agli aeroporti\n2 - Aggiungi un arco alle stazioni\n3 - Annulla\n\nInserire il valore: ");
     fflush(stdin);
     scanf("%d", &mode);
@@ -530,7 +531,7 @@ void aggiungiArcoMenu(t_grafoP* G)
 
     if(mode == 1)
     {
-        stampaGrafoPrincipale(G);
+        
 
         for(i=0; i<G->nv; i++)
         {
@@ -584,7 +585,7 @@ void aggiungiArcoMenu(t_grafoP* G)
 
     if(mode == 2)
     {
-        stampaGrafoPrincipale(G);
+        
 
         for(i=0; i<G->nv; i++)
         {
@@ -781,10 +782,10 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     }
 
     if(mode == 0)
-        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 0);
+        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 0, codaUtenti, user);
 
     if(mode == 1)
-        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 1);
+        percorso = dijkstraGenerico(G, keyPartenza, keyArrivo, 1, codaUtenti, user);
 
     if(percorso == NULL)
     {
@@ -796,6 +797,7 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
             NOTIFICA_ADMIN = 1;
             inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
             printf("Aggiunto!\n");
+            mostraCodaAttesa(codaUtenti);
         }
         else
             printf("Non aggiunto\n");

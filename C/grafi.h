@@ -56,7 +56,6 @@ t_grafoP* leggiNomiCitta(t_grafoP* G);
 void stampaCitta(t_grafoC* G);
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key);
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode);
-int verificaRaggiungibile();
 void stampaNomiCitta(t_grafoP* G, int mode);
 void stampaAlberghi(t_grafoC* GC);
 t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo);

@@ -50,6 +50,7 @@ void aggiungiArcoGrafoPrincipale(t_grafoP* G, int u, int v, int costo, int dista
 				e = G->adjAereoporti[u];
 				while (e->next != NULL)
 				{
+					
 					if (e->key == nuovo->key)
 					{
 						printf("\nArco gia\' presente");
@@ -57,6 +58,7 @@ void aggiungiArcoGrafoPrincipale(t_grafoP* G, int u, int v, int costo, int dista
 						return;
 					}
 					e = e->next;
+					
 				}
 				e->next = nuovo;
 			}
@@ -509,8 +511,6 @@ t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
     if(pi[meta] == -1)
     {
         printf("\nLa meta %s non e\' raggiungibile da %s con un aereo\n", G->nomiCitta[meta], G->nomiCitta[s]);
-		//puts(G->nomiCitta[s]);
-		//inserisciCodaAttesa(codaUtenti, user, G->nomiCitta[s], G->nomiCitta[meta], 0);
         return NULL;
     }
 
@@ -941,14 +941,19 @@ void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
         else
         {
             prev = e;
-            while(prev != NULL && prev->next->key != v)
-                prev = prev->next;
+			if (prev == NULL)
+			{
+				printf("\nArco assente");
+				return;
+			}
 
-            if(prev == NULL)
-            {
-                printf("\nArco assente");
-                return;
-            }
+			while (prev != NULL && prev->next->key != v) {
+				prev = prev->next;
+				if (prev != NULL && prev->next == NULL) {
+					printf("\nARCO ASSENTE");
+					return;
+				}
+			}              
 
             e = prev->next;
             prev->next = e->next;
@@ -965,14 +970,18 @@ void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
         else
         {
             prev = e;
-            while(prev != NULL && prev->next->key != v)
-                prev = prev->next;
-
-            if(prev == NULL)
-            {
-                printf("\nArco assente");
-                return;
-            }
+			if (prev == NULL)
+			{
+				printf("\nArco assente");
+				return;
+			}
+			while (prev != NULL && prev->next->key != v) {
+				prev = prev->next;
+				if (prev == NULL) {
+					printf("\nARCO ASSENTE");
+					return;
+				}
+			}
 
             e = prev->next;
             prev->next = e->next;
