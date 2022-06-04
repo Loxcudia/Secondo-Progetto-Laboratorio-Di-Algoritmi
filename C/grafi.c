@@ -1041,7 +1041,7 @@ t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo)
 
     /*for (i = 0; i < G->nv; i++)
         printf("\nd[%d] = %3d, pi[%d] = %3d", i, d[i], i, pi[i]);
-    //^for da eliminare, tenuto solo per debug*/
+    ^for da eliminare, tenuto solo per debug*/
 
 
     prec = albergo;
@@ -1054,7 +1054,6 @@ t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo)
         inserimentoInTesta(&strada, prec);
         prec = pi[prec];
     }
-    printf("%s\n\n", GC->nomeAlberghi[prec]);
 
     return strada;
 }

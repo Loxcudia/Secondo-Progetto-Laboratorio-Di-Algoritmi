@@ -916,6 +916,8 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
 
     strada = dijkstraAlberghi(GC, mode, keyAlbergo);
 
+    if(strada == NULL)
+        return;
 
     system("cls||clear");
     stampaLista(percorso);
