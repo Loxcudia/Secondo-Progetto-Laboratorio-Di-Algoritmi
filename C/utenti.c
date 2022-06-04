@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 #define _CRT_SECURE_NO_WARNINGS
-int NOTIFICA_ADMIN;
+int NOTIFICA_ADMIN = 0;
 
 
 //DEFINZIONE FUNZIONI
@@ -156,7 +156,10 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 
 void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) {
 	int scelta;
-
+    if (codaUtenti)
+        NOTIFICA_ADMIN = 1;
+    else
+        NOTIFICA_ADMIN = 0;
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
 	fflush(stdin);
 	scanf("%d", &scelta);
@@ -171,32 +174,52 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 		return;
 	}
 
-	printf("***************** MENU ADMIN *****************\n\nCiao, %s", user.username);
+	printf("***************** MENU ADMIN *****************\n\nCiao, %s\n\n", user.username);
 	while (1) {
 		if (NOTIFICA_ADMIN == 1)
 		{
 			int x;
-			printf("Notifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n");
+			printf("Notifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n\n");
 			mostraCodaAttesa(codaUtenti);
-			printf("Vuoi renderle disponibili? (No significa eliminarle)\n-0 Sì\n-1 No\n");
+			printf("Vuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?\n-0 Le rendo disponibili o le elimino\n-1(o qualsiasi altro numero) Me ne occupo un'altra volta\n\n");
 			scanf("%d", &x);
-			if (x == 1)
+			if (x == 0)
 			{
 				if (codaUtenti)
 				{
 					codaAttesa* tmp = codaUtenti;
 					while (tmp)
 					{
-						int c, d;
-						printf("Destinazione: %s non raggiungibile da Arrivo: %s\n");
-						printf("Inserisci il costo:\n");
-						scanf("%d", &c);
-						printf("Inserisci la distanza: \n");
-						scanf("%d", &d);
-						aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
-						tmp = tmp->next;
+                        codaAttesa* nodoDaEliminare = NULL;
+						int c, d, y;
+						printf("Destinazione: %s non raggiungibile da Partenza: %s\n", tmp->cittaArrivo, tmp->cittaPartenza);
+                        printf("Vuoi renderla disponibile la meta o rimuoverla?\n-0 Renderla Disponibile\n-1 (o qualsiasi altro numero) Eliminarla\n");
+                        scanf("%d", &y);
+                        if (y == 0)
+                        {
+                            printf("OK, hai scelto di renderla disponibile. Ora:\n");
+                            printf("Inserisci il costo:\n");
+                            scanf("%d", &c);
+                            printf("Inserisci la distanza: \n");
+                            scanf("%d", &d);
+                            aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
+                            nodoDaEliminare = tmp;
+                            tmp = tmp->next;
+                            free(nodoDaEliminare);
+                            printf("OK, aggiunta\n");
+                        }
+                        else
+                        {
+                            printf("OK, hai scelto di eliminarla. Procedo...\n");
+                            nodoDaEliminare = tmp;
+                            tmp = tmp->next;
+                            free(nodoDaEliminare);
+                            printf("Rimossa\n");
+                        }
 					}
 				}
+                FILE *fp = fopen("coda.txt", "w");
+                fclose(fp);
 			}
 			else
 			{
@@ -650,7 +673,7 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 	}
 		
 	else {
-		int boolean = 0;
+		int flag = 0;
 		codaAttesa* p = codaUtente;
 		while (p != NULL) {
 			if (!strcmp(partenza, p->cittaPartenza) && !strcmp(destinazione, p->cittaArrivo)) {
@@ -660,19 +683,18 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 						return;
 					}
 				}
-				boolean = 1;
+				flag = 1;
 			}
-			if(p->next != NULL)
-				p = p->next;
+			p = p->next;
 		}
 		p = codaUtente;
-		while (!boolean && p != NULL) {
-			p = p->next;
+		while (flag == 0 && p != NULL) {
 			if (p->next == NULL) {
 				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
                 salvaCoda(p->next);
-				boolean = 1;
+				flag = 1;
 			}
+            p = p->next;
 		}
 	}
 
