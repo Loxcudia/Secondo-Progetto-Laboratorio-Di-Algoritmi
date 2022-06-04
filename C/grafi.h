@@ -59,5 +59,8 @@ void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode);
 void stampaNomiCitta(t_grafoP* G, int mode);
 void stampaAlberghi(t_grafoC* GC);
 t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo);
+void stampaLista(t_lista* lista, t_grafoC* GC);
+void stampaPercorso(t_lista* lista, t_grafoP* G);
+
 
 #endif // GRAFI_H

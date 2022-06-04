@@ -8,7 +8,7 @@ int main()
 {
 	int scelta;
 	int i;
-	Utente user;
+    Utente user;
 	t_grafoP* G = NULL;
 	t_grafoC** GC = NULL;
 

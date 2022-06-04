@@ -80,7 +80,7 @@ int estraiMinimo(t_lista** lista, int* d)
 	p = *lista;
 	while (p != NULL)
 	{
-		if ((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX)
+        if ((d[p->data] != UINT_MAX && d[p->data] < d[pmin->data]) || d[pmin->data] == UINT_MAX )
 		{
 			pmin = p;
 			precmin = prec;
@@ -97,23 +97,37 @@ int estraiMinimo(t_lista** lista, int* d)
 	return u;
 }
 
-void stampaLista(t_lista* lista) {
-	if (!lista)
+void stampaLista(t_lista* lista, t_grafoC* GC)
+{
+    if (!lista)
 		return;
-	else
-	{
-		printf("%d ->", lista->data);
-		stampaLista(lista->next);
-		printf("\n");
-	}
+
+    if(lista->next == NULL)
+    {
+        printf("%s\n", GC->nomeAlberghi[lista->data]);
+        return;
+    }
+
+    printf("%s -> ", GC->nomeAlberghi[lista->data]);
+    stampaLista(lista->next, GC);
 }
 
-void stampaPercorso(t_lista* lista) {
-	if (!lista) {
-		return;
-	}
-	else {
-		stampaPercorso(lista->next);
-		printf("%d -> ", lista->data);
-	}
+void stampaPercorso(t_lista* lista, t_grafoP* G) {
+    if (!lista)
+        return;
+
+    if(lista->next == NULL)
+    {
+        printf("%s -> ", G->nomiCitta[lista->data]);
+        return;
+    }
+
+    stampaPercorso(lista->next, G);
+    printf("%s -> ", G->nomiCitta[lista->data]);
+
 }
+
+
+
+
+

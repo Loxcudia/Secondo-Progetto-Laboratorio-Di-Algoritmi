@@ -45,7 +45,7 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
 void modificaCittaMenu(t_grafoP* G, t_grafoC **GC);
 void toggleAeroporto(t_grafoP* G);
 void toggleStazione(t_grafoP* G);
-void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G);
+void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G, t_grafoC* GC);
 codaAttesa* caricaCoda();
 void salvaCoda(codaAttesa* coda);
 codaAttesa* accodaNodo(codaAttesa* testa, codaAttesa* nodo);

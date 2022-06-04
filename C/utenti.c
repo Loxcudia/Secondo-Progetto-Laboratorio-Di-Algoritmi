@@ -16,7 +16,7 @@ Utente registrazioneUtente() {
 	char password_conferma[PASSWORD_LENGTH];
 	Utente user;
 
-
+    system("cls||clear");
 	printf("\n\n\tREGISTRAZIONE UTENTE \n");
 	printf("\n\n1 - Admin\n\n0 - Utente\n\nInserisci il valore: ");
 	fflush(stdin);
@@ -71,6 +71,7 @@ Utente loginUtente() {
 	char password[PASSWORD_LENGTH + 1];
 	int s = 1, flag = 1;
 
+    system("cls||clear");
 	printf("\n\n\tACCESSO UTENTE\n\n");
 
 	while (flag) {
@@ -93,15 +94,22 @@ Utente loginUtente() {
 		}
 
 		fclose(f);
-		printf("\n\nUtente non trovato. Riprovare?\n\n1 - Si\n0 - No\n\nInserire il valore: ");
+
+        printf("\n\nUtente non trovato. Riprovare?\n\n1 - Si\n0 - No\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &flag);
 		while (flag != 0 && flag != 1) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &flag);
-		}
-	}
+        }
+
+        if(flag == 0)
+            exit(0);
+
+        if(flag == 1)
+            return loginUtente();
+    }
 }
 
 void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti) {
@@ -109,16 +117,16 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
     int i;
     t_lista* dijkstra = NULL;
 
+    system("cls||clear");
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
     if (notificaUtente(codaUtenti, user.username)) 
         printf("Una delle tue mete in attesa e' diventata disponibile!");
     
 	while (1) {
-        printf("\nOpzioni possibili:\n\n0 - Mostra tutte le mete possibili\n1 - Mostra citta con aeroporti\n2 - Mostra citta con stazioni"
-               "\n3 - Prenota un viaggio\n4 - Logout\n\nInserire il valore: ");
+        printf("\nOpzioni possibili:\n\n0 - Mostra tutte le mete possibili\n1 - Prenota un viaggio\n2 - Logout\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
-		while (scelta != 0 && scelta != 1 && scelta != 2 && scelta != 3 && scelta != 4) {
+        while (scelta != 0 && scelta != 1 && scelta != 2) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -126,27 +134,20 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 		switch (scelta) {
             case 0:
                 system("cls||clear");
-                printf("Citta\' con aeroporto: \n");
+                printf("\nCitta\' con aeroporti:\n");
                 stampaNomiCitta(G, 0);
-                printf("Citta\' con stazione: \n");
+                printf("\n");
+
+                printf("\nCitta\' con stazioni:\n");
                 stampaNomiCitta(G, 1);
+                printf("\n");
                 break;
 
             case 1:
-                system("cls||clear");
-                stampaNomiCitta(G, 0);
-                break;
-
-            case 2:
-                system("cls||clear");
-                stampaNomiCitta(G, 1);
-                break;
-
-            case 3:
                 prenotaViaggio(user, G, GC, codaUtenti);
                 break;
 
-            case 4:
+            case 2:
                 printf("Arrivederci, %s :'(\n", user.username);
                 return;
 
@@ -160,6 +161,9 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
         NOTIFICA_ADMIN = 1;
     else
         NOTIFICA_ADMIN = 0;
+
+    system("cls||clear");
+
 	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
 	fflush(stdin);
 	scanf("%d", &scelta);
@@ -181,8 +185,12 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 			int x;
 			printf("Notifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n\n");
 			mostraCodaAttesa(codaUtenti);
-			printf("Vuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?\n-0 Le rendo disponibili o le elimino\n-1(o qualsiasi altro numero) Me ne occupo un'altra volta\n\n");
+            printf("\nVuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?"
+                   "\n0 - Le rendo disponibili o le elimino"
+                   "\n1 - (o qualsiasi altro numero) Me ne occupo un'altra volta"
+                   "\nInserisci la scelta: ");
 			scanf("%d", &x);
+            fflush(stdin);
 			if (x == 0)
 			{
 				if (codaUtenti)
@@ -220,23 +228,10 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 				}
                 FILE *fp = fopen("coda.txt", "w");
                 fclose(fp);
-			}
-			else
-			{
-				printf("OK, procedo con l'eliminazione\n");
-				NOTIFICA_ADMIN = 0;
-				if (codaUtenti)
-				{
-					codaAttesa* tmp = codaUtenti;
-					while (tmp)
-					{
-						rimuoviArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, tmp->aot);
-						printf("Meta %s eliminata\n", tmp->cittaArrivo);
-						tmp = tmp->next;
-					}
-				}
-			}
-		}
+            }
+            else
+                system("cls||clear");
+        }
         printf("\nOpzioni possibili:\n"
                "\n0 - Mostra tutti i viaggi possibili"
                "\n1 - Mostra tutte le citta' disponibili"
@@ -292,9 +287,11 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                 modificaCittaMenu(G, GC);
                 break;
             case 8:
+                system("cls||clear");
                 toggleAeroporto(G);
                 break;
             case 9:
+                system("cls||clear");
                 toggleStazione(G);
                 break;
             case 10:
@@ -414,6 +411,8 @@ void toggleAeroporto(t_grafoP* G)
         G->aereoporti[key] = 1;
     else
         G->aereoporti[key] = 0;
+
+    salvaGrafo(G);
 }
 
 void toggleStazione(t_grafoP* G)
@@ -441,6 +440,7 @@ void toggleStazione(t_grafoP* G)
     else
         G->stazioni[key] = 0;
 
+    salvaGrafo(G);
 }
 
 void rimuoviArcoMenu(t_grafoP* G)
@@ -741,7 +741,8 @@ void prenotaViaggio(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
 {
     int mode;
 
-    printf("0 - Viaggio in aereo\n1 - Viaggio in treno\nInserire la scelta: ");
+    system("cls||clear");
+    printf("\n0 - Viaggio in aereo\n1 - Viaggio in treno\n\nInserire la scelta: ");
     scanf("%d", &mode);
     fflush(stdin);
     while (mode < 0 || mode > 1) {
@@ -774,11 +775,11 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     system("cls||clear");
     printf("\n");
     stampaNomiCitta(G, 0);
-    printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
+    printf("\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
     fflush(stdin);
 
-    printf("\n\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
+    printf("\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
     scanf("%s", arrivo);
     fflush(stdin);
 
@@ -847,11 +848,11 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     system("cls||clear");
     printf("\n");
     stampaNomiCitta(G, 1);
-    printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
+    printf("\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
     fflush(stdin);
 
-    printf("\n\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
+    printf("\nQuale meta vuoi raggiungere?\nInserire il nome della citta\': ");
     scanf("%s", arrivo);
     fflush(stdin);
 
@@ -869,7 +870,7 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
         return;
     }
 
-    printf("0 - Viaggio economico\n1 - Viaggio breve\nInserire la scelta: ");
+    printf("\n0 - Viaggio economico\n1 - Viaggio breve\nInserire la scelta: ");
     scanf("%d", &mode);
     fflush(stdin);
 
@@ -910,7 +911,7 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
     char nomeAlbergo[20];
     int keyAlbergo = -1;
     int i;
-    char conferma;
+    int conferma;
     t_lista* strada = NULL;
 
     printf("\n\nScelta dell'albergo:\n\n");
@@ -954,29 +955,34 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
         return;
 
     system("cls||clear");
-    stampaLista(percorso);
-    printf("\n");
-    stampaLista(strada);
-    printf("\n");
+    stampaPercorso(percorso, G);
+    printf("\n\n");
+    stampaLista(strada, GC);
+    printf("\n\n");
 
-    printf("\nConfermare(y/n)?\nInserire la scelta: ");
-    scanf("%c", &conferma);
+    printf("\n0 - Conferma"
+           "\n1 - Annulla"
+           "\nInserire la scelta: ");
+    scanf("%d", &conferma);
     fflush(stdin);
 
-    while(toupper(conferma) != 'Y' && toupper(conferma) != 'N')
+    while(conferma != 0 && conferma != 1)
     {
-        printf("\nRisposta non valida!\nConfermare(y/n)?\nInserire la scelta: ");
-        scanf("%c", &conferma);
+        printf("\nValore non valido!"
+               "\n0 - Conferma"
+               "\n1 - Annulla"
+               "\nInserire la scelta: ");
+        scanf("%d", &conferma);
         fflush(stdin);
     }
 
-    if(toupper(conferma) == 'Y')
-        stampaRicevuta(user, percorso, strada, G);
-    else
+    if(conferma == 0)
+        stampaRicevuta(user, percorso, strada, G, GC);
+    else //free lista
         return;
 }
 
-void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G)
+void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G, t_grafoC* GC)
 {
     FILE *fp = NULL;
     char nomeFile[20];
@@ -990,15 +996,18 @@ void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G
         fprintf(fp, "%s -> ", G->nomiCitta[percorso->data]);
         percorso = percorso->next;
     }
-    fprintf(fp, "%s\n ", G->nomiCitta[percorso->data]);
+    fprintf(fp, "%s\n", G->nomiCitta[percorso->data]);
 
     while(strada->next!=NULL)
     {
-        fprintf(fp, "%s -> ", G->nomiCitta[strada->data]);
+        fprintf(fp, "%s -> ", GC->nomeAlberghi[strada->data]);
         strada = strada->next;
     }
-    fprintf(fp, "%s\n ", G->nomiCitta[strada->data]);
+    fprintf(fp, "%s\n\n", G->nomiCitta[strada->data]);
 
+    printf("\nRicevuta stampata e visibile in %s\nBuon Viaggio!", nomeFile);
+
+    fclose(fp);
 }
 
 codaAttesa* caricaCoda() {

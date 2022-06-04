@@ -380,7 +380,7 @@ void stampaCitta(t_grafoC* G)
             printf("0 - Luoghi adiacenti all'aereoporto: ");
 			while (l != NULL)
 			{
-                printf("%s", G->nomeAlberghi[l->key]);
+                printf("%s ", G->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
@@ -392,7 +392,7 @@ void stampaCitta(t_grafoC* G)
             printf("1 - Luoghi adiacenti alla stazione: ");
 			while (l != NULL)
 			{
-                printf("%s", G->nomeAlberghi[l->key]);
+                printf("%s ", G->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
@@ -402,7 +402,7 @@ void stampaCitta(t_grafoC* G)
         printf("%d - Luoghi adiacenti a %s: ", i , G->nomeAlberghi[i]);
 		while (l != NULL)
 		{
-            printf("%s", G->nomeAlberghi[l->key]);
+            printf("%s ", G->nomeAlberghi[l->key]);
 			l = l->next;
 		}
 		printf("\n");
@@ -483,7 +483,7 @@ t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 
 	for (i = 0; i < G->nv; i++)
 	{
-		d[i] = UINT_MAX;
+        d[i] = UINT_MAX;
 		pi[i] = -1;
 	}
 
@@ -498,7 +498,7 @@ t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
 		e = G->adjAereoporti[u];
 
 		while (e != NULL)
-		{
+        {
 			if (d[e->key] == UINT_MAX || d[e->key] > d[u] + e->costo)
 			{
 				pi[e->key] = u;
@@ -593,6 +593,7 @@ t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
     while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
+
         if(inserimentoInPercorso(&percorso, prec) == 0)
             return NULL;
         else
@@ -766,9 +767,7 @@ void salvaGrafoCitta(t_grafoC** C, int nv) {
 
 	for (i = 0; i < nv; i++)
 	{
-		fprintf(fp, "%d\n", C[i]->nv);
-
-		for (j = 0; j < C[i]->nv;j++)
+        for (j = 0; j < C[i]->nv;j++)
 		{
 			arcoLuogo = C[i]->adj[j];
 			while (arcoLuogo != NULL)
@@ -845,7 +844,7 @@ t_grafoC** leggiGrafoCitta(int nv)
 		}
 
 		strcpy(GC[i]->nomeAlberghi[0], "Aereoporto");
-		strcpy(GC[i]->nomeAlberghi[1], "Stazioni");
+        strcpy(GC[i]->nomeAlberghi[1], "Stazione");
 
 
         for (k = 2; k < j; k++)
@@ -867,7 +866,7 @@ void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)
 
 	if (i<0 || i>G->nv - 1 || key<0 || key>G->nv - 1)
 	{
-		printf("\nArco non aggiunto, vertici richiesti invalidi(valori validi: 0 a %d)", G->nv - 1);
+        printf("\nArco non aggiunto, vertici richiesti invalidi(valori validi: 0 a %d), %d %d invalidi", G->nv-1, i, key);
 		return;
 	}
 
@@ -911,7 +910,7 @@ void stampaNomiCitta(t_grafoP* G, int mode)
 {
     int i;
 
-    //0 per stampare solo le città che hanno aeroporti, 1 per le stazioni
+    //0 per stampare solo le città che hanno aeroporti, 1 per le stazioni, 2 tutto
 
     if(mode == 0)
         for(i=0; i<G->nv; i++)
@@ -926,6 +925,10 @@ void stampaNomiCitta(t_grafoP* G, int mode)
             if(G->stazioni[i])
                 printf("%s\n", G->nomiCitta[i]);
         }
+
+    if(mode == 2)
+        for(i=0; i<G->nv; i++)
+            printf("%s\n", G->nomiCitta[i]);
 }
 
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
@@ -1062,7 +1065,7 @@ t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo)
 
     t_lista* strada = NULL;
 
-    while(prec != 0)
+    while(prec != -1)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
         inserimentoInTesta(&strada, prec);
