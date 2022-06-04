@@ -745,6 +745,8 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     int mode;
     t_lista* percorso = NULL;
 
+    system("cls||clear");
+    printf("\n");
     stampaNomiCitta(G, 0);
     printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
@@ -816,6 +818,8 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     int mode;
     t_lista* percorso = NULL;
 
+    system("cls||clear");
+    printf("\n");
     stampaNomiCitta(G, 1);
     printf("\n\nDove ti trovi?\nInserire il nome della citta\': ");
     scanf("%s", partenza);
