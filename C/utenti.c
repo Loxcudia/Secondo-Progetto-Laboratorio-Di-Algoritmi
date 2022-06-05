@@ -115,7 +115,6 @@ Utente loginUtente() {
 void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti) {
 	int scelta;
     int i;
-    t_lista* dijkstra = NULL;
 
     system("cls||clear");
 	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
@@ -157,6 +156,8 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
 
 void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) {
 	int scelta;
+    int i;
+
     if (codaUtenti)
         NOTIFICA_ADMIN = 1;
     else
@@ -178,60 +179,115 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 		return;
 	}
 
+    if (NOTIFICA_ADMIN == 1)
+    {
+        int x;
+        printf("\n\nNotifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n\n");
+        mostraCodaAttesa(codaUtenti);
+        printf("\nVuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?"
+               "\n0 - Le rendo disponibili o le elimino"
+               "\n1 - (o qualsiasi altro numero) Me ne occupo un'altra volta"
+               "\nInserisci la scelta: ");
+        scanf("%d", &x);
+        fflush(stdin);
+        if (x == 0)
+        {
+            if (codaUtenti)
+            {
+                codaAttesa* tmp = codaUtenti;
+                while (tmp)
+                {
+                    codaAttesa* nodoDaEliminare = NULL;
+                    int c, d, y;
+                    printf("\nDestinazione: %s non raggiungibile da Partenza: %s", tmp->cittaArrivo, tmp->cittaPartenza);
+                    if(tmp->aot==0)
+                        printf(" con aereo\n");
+                    else
+                        printf(" con treno\n");
+                    printf("Vuoi renderla disponibile la meta, rimuoverla o rifiutare la richiesta?"
+                           "\n0 - Renderla Disponibile"
+                           "\n1 - Eliminarla"
+                           "\n2 - Rifiuta la richiesta"
+                           "\nInserire la scelta: ");
+                    scanf("%d", &y);
+                    if (y == 0)
+                    {
+                        printf("\nOK, hai scelto di renderla disponibile. Ora:\n");
+                        printf("Inserisci il costo:\n");
+                        scanf("%d", &c);
+                        printf("Inserisci la distanza: \n");
+                        scanf("%d", &d);
+                        aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
+                        salvaGrafo(G);
+                        nodoDaEliminare = tmp;
+                        tmp = tmp->next;
+                        free(nodoDaEliminare);
+                        printf("OK, aggiunta\n");
+                    }
+
+                    if(y==1)
+                    {
+                        printf("\nOk, hai scelto di eliminare la meta. Procedo...\n");
+                        if(tmp->aot == 0)
+                        {
+                            freeArco(G->adjAereoporti[tmp->keyArrivo]);
+                            G->adjAereoporti[tmp->keyArrivo] = NULL;
+
+                            for(i=0; i<G->nv;i++)
+                            {
+                                if(i==tmp->keyArrivo)
+                                    continue;
+                                rimuoviArcoGrafoPrincipale(G, i, tmp->keyArrivo, 0);
+                            }
+                            salvaGrafo(G);
+                            printf("\nFinisco");
+                            nodoDaEliminare = tmp;
+                            tmp = tmp->next;
+                            free(nodoDaEliminare);
+                            continue;
+                        }
+
+                        if(tmp->aot == 1)
+                        {
+                            freeArco(G->adjStazioni[tmp->keyArrivo]);
+                            G->adjStazioni[tmp->keyArrivo] = NULL;
+
+                            for(i=0; i<G->nv;i++)
+                            {
+                                if(i==tmp->keyArrivo)
+                                    continue;
+                                rimuoviArcoGrafoPrincipale(G, i, tmp->keyArrivo, 1);
+                            }
+
+                            salvaGrafo(G);
+                            printf("\nFinisco");
+                            nodoDaEliminare = tmp;
+                            tmp = tmp->next;
+                            free(nodoDaEliminare);
+                            continue;
+                        }
+                    }
+
+                    if(y==2)
+                    {
+                        printf("\nOK, hai scelto di rifiutarla. Procedo...\n");
+                        nodoDaEliminare = tmp;
+                        tmp = tmp->next;
+                        free(nodoDaEliminare);
+                        printf("Rimossa\n");
+                    }
+                }
+            }
+            FILE *fp = fopen("coda.txt", "w");
+            fclose(fp);
+        }
+        else
+            system("cls||clear");
+    }
+
+
 	printf("***************** MENU ADMIN *****************\n\nCiao, %s\n\n", user.username);
 	while (1) {
-		if (NOTIFICA_ADMIN == 1)
-		{
-			int x;
-			printf("Notifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n\n");
-			mostraCodaAttesa(codaUtenti);
-            printf("\nVuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?"
-                   "\n0 - Le rendo disponibili o le elimino"
-                   "\n1 - (o qualsiasi altro numero) Me ne occupo un'altra volta"
-                   "\nInserisci la scelta: ");
-			scanf("%d", &x);
-            fflush(stdin);
-			if (x == 0)
-			{
-				if (codaUtenti)
-				{
-					codaAttesa* tmp = codaUtenti;
-					while (tmp)
-					{
-                        codaAttesa* nodoDaEliminare = NULL;
-						int c, d, y;
-						printf("Destinazione: %s non raggiungibile da Partenza: %s\n", tmp->cittaArrivo, tmp->cittaPartenza);
-                        printf("Vuoi renderla disponibile la meta o rimuoverla?\n-0 Renderla Disponibile\n-1 (o qualsiasi altro numero) Eliminarla\n");
-                        scanf("%d", &y);
-                        if (y == 0)
-                        {
-                            printf("OK, hai scelto di renderla disponibile. Ora:\n");
-                            printf("Inserisci il costo:\n");
-                            scanf("%d", &c);
-                            printf("Inserisci la distanza: \n");
-                            scanf("%d", &d);
-                            aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
-                            nodoDaEliminare = tmp;
-                            tmp = tmp->next;
-                            free(nodoDaEliminare);
-                            printf("OK, aggiunta\n");
-                        }
-                        else
-                        {
-                            printf("OK, hai scelto di eliminarla. Procedo...\n");
-                            nodoDaEliminare = tmp;
-                            tmp = tmp->next;
-                            free(nodoDaEliminare);
-                            printf("Rimossa\n");
-                        }
-					}
-				}
-                FILE *fp = fopen("coda.txt", "w");
-                fclose(fp);
-            }
-            else
-                system("cls||clear");
-        }
         printf("\nOpzioni possibili:\n"
                "\n0 - Mostra tutti i viaggi possibili"
                "\n1 - Mostra tutte le citta' disponibili"
@@ -242,11 +298,13 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                "\n8 - Attiva/disattiva aeroporto"
                "\n9 - Attiva/disattiva stazione"
                "\n10 - Rinomina una citta\'"
-               "\n11 - Logout\n\nInserire il valore: ");
+               "\n11 - Aggiungi una citta\'"
+               "\n12 - Logout"
+               "\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
 
-        while (scelta < 0 || scelta > 11) {
+        while (scelta < 0 || scelta > 12) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -260,8 +318,8 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 				break;
 			case 1:
 				system("cls||clear");
-				printf("Mostra tutte le citta' disponibili");
-				stampaGrafoCitta(GC, 2, G->nv);
+                printf("Mostro tutte le citta' disponibili: \n");
+                stampaGrafoCitta(GC, G, 2, G->nv);
 				break;
 			case 2:
 				system("cls||clear");
@@ -300,11 +358,121 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                 rinominaCitta(G);
                 break;
             case 11:
+                system("cls||clear");
+              //  aggiungiCitta(&G, &GC);
+                break;
+            case 12:
 				system("cls||clear");
 				printf("Arrivederci, %s :'(\n", user.username);
 				return;
 		}
 	}   
+}
+
+void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
+{
+    char nomeCitta[20];
+    char nomeAlbergo[20];
+    t_arcoP** tmpAdjaerei;
+    t_arcoP** tmpAdjtreni;
+    int* tmpAerei;
+    int* tmpTreni;
+    int i, a, t;
+    char** tmpNomi;
+
+    stampaNomiCitta(*G, 2);
+
+    printf("\nInserire il nome della citta\' da inserire: ");
+    scanf("%s", nomeCitta);
+    fflush(stdin);
+
+    for(i=0; i<(*G)->nv;i++)
+    {
+        if(strcmp(nomeCitta, (*G)->nomiCitta[i]) == 0)
+        {
+            printf("\nCitta\' gia\' presente, usare i menu di modifica\n");
+            return;
+        }
+    }
+
+    (*G)->nv = (*G)->nv+1;
+
+    tmpNomi = (char**)realloc((*G)->nomiCitta, (*G)->nv);
+    (*G)->nomiCitta = tmpNomi;
+    (*G)->nomiCitta[(*G)->nv-1] = (char*)malloc(200*sizeof(char));
+
+    strcpy((*G)->nomiCitta[(*G)->nv-1], nomeCitta);
+
+    tmpAerei = (int*)realloc((*G)->aereoporti, (*G)->nv);
+    (*G)->aereoporti = tmpAerei;
+
+    tmpTreni = (int*)realloc((*G)->stazioni, (*G)->nv);
+    (*G)->stazioni = tmpTreni;
+
+    printf("\n%s ha un aeroporto?"
+           "\n0 - No"
+           "\n1 - Si"
+           "\nInserire la scelta: ", nomeCitta);
+    scanf("%d", &a);
+    fflush(stdin);
+    while(a!=0 && a!=1)
+    {
+        printf("\nValore non valido!"
+               "\n%s ha un aeroporto?"
+               "\n0 - No"
+               "\n1 - Si"
+               "\nInserire la scelta: ", nomeCitta);
+        scanf("%d", &a);
+        fflush(stdin);
+    }
+
+    printf("\n%s ha una stazione?"
+           "\n0 - No"
+           "\n1 - Si"
+           "\nInserire la scelta: ", nomeCitta);
+    scanf("%d", &t);
+    fflush(stdin);
+    while(t!=0 && t!=1)
+    {
+        printf("\nValore non valido!"
+               "\n%s ha una stazione?"
+               "\n0 - No"
+               "\n1 - Si"
+               "\nInserire la scelta: ", nomeCitta);
+        scanf("%d", &t);
+        fflush(stdin);
+    }
+
+    (*G)->aereoporti[(*G)->nv-1] = a;
+    (*G)->stazioni[(*G)->nv-1] = t;
+
+    tmpAdjaerei = (t_arcoP**)realloc((*G)->adjAereoporti, (*G)->nv);
+    (*G)->adjAereoporti = tmpAdjaerei;
+    tmpAdjtreni = (t_arcoP**)realloc((*G)->adjStazioni, (*G)->nv);
+    tmpAdjtreni = (t_arcoP**)realloc((*G)->adjStazioni, (*G)->nv);
+
+    (*G)->adjAereoporti[(*G)->nv-1] = NULL;
+    (*G)->adjStazioni[(*G)->nv-1] = NULL;
+
+    *GC = (t_grafoC**)realloc(*GC, (*G)->nv-1);
+
+    (*GC)[(*G)->nv-1] = creaGrafoCitta(4);
+
+    strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[0], "Aeroporto");
+    strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[1], "Stazione");
+
+    for(i=2; i<4; i++)
+    {
+        printf("\nQual e\' il nome dell\'albergo numero %d di %s?"
+               "\nInserire il nome: ", i-1, nomeCitta);
+        scanf("%s", nomeAlbergo);
+        fflush(stdin);
+        strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[i], nomeAlbergo);
+        printf("%s\n", (*GC)[(*G)->nv-1]->nomeAlberghi[i]);
+    }
+
+      salvaGrafo(*G);
+//    salvaGrafoCitta(*GC, (*G)->nv);
 }
 
 void rinominaCitta(t_grafoP* G)
@@ -314,7 +482,7 @@ void rinominaCitta(t_grafoP* G)
     char nomeCitta[20];
 
     for(i=0;i<G->nv;i++)
-        printf("%d - %s", i, G->nomiCitta[i]);
+        printf("%d - %s\n", i, G->nomiCitta[i]);
 
     printf("\nQuale citta\' vuoi rinominare?"
            "\nInserire l\'indice: ");
@@ -373,11 +541,11 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)
         {
             case(0):
                 system("cls||clear");
-                stampaCitta(GC[key]);
+                stampaCitta(GC[key], G, key);
                 break;
             case(1):
                 system("cls||clear");
-                stampaCitta(GC[key]);
+                stampaCitta(GC[key], G, key);
 
                 printf("\nInserire il vertice di partenza: ");
                 scanf("%d", &u);
@@ -397,7 +565,7 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)
                 break;
             case(2):
                 system("cls||clear");
-                stampaCitta(GC[key]);
+                stampaCitta(GC[key], G, key);
 
                 printf("\nInserire il vertice di partenza: ");
                 scanf("%d", &u);
@@ -429,7 +597,7 @@ void toggleAeroporto(t_grafoP* G)
 
     for(i=0; i<G->nv; i++)
     {
-        printf("%s: aeroporto:%d\n", G->nomiCitta[i], G->aereoporti[i]);
+        printf("%d - %s: aeroporto:%d\n", i, G->nomiCitta[i], G->aereoporti[i]);
     }
 
     printf("\nInserire la chiave dell'aeroporto: ");
@@ -457,7 +625,7 @@ void toggleStazione(t_grafoP* G)
 
     for(i=0; i<G->nv; i++)
     {
-        printf("%s: stazione:%d\n", G->nomiCitta[i], G->stazioni[i]);
+        printf("%d - %s: stazione:%d\n", i, G->nomiCitta[i], G->stazioni[i]);
     }
 
     printf("\nInserire la chiave della stazione: ");
@@ -499,8 +667,6 @@ void rimuoviArcoMenu(t_grafoP* G)
 
     if(mode == 1)
     {
-        
-
         for(i=0; i<G->nv; i++)
         {
             if(G->aereoporti[i])
@@ -762,8 +928,13 @@ void mostraCodaAttesa(codaAttesa* codaUtente) {
 
 	codaAttesa* p = codaUtente;
 	while (p != NULL) {
-		printf("Utenti in attesa per la meta %s partendo da %s in aereo:\n", p->cittaArrivo, p->cittaPartenza);
-		for (int i = 0; i < 100; i++) {
+        if(p->aot == 0)
+            printf("Utenti in attesa per la meta %s partendo da %s in aereo:\n", p->cittaArrivo, p->cittaPartenza);
+
+        if(p->aot == 1)
+            printf("Utenti in attesa per la meta %s partendo da %s in treno:\n", p->cittaArrivo, p->cittaPartenza);
+
+        for (int i = 0; i < 100; i++) {
             if (p->utenti[i].isAdmin >= 0)
                 printf("%s \n", p->utenti[i].username);
             else continue;
@@ -1013,8 +1184,12 @@ void prenotaAlbergo(Utente user, t_grafoP* G, t_grafoC* GC, t_lista* percorso, i
 
     if(conferma == 0)
         stampaRicevuta(user, percorso, strada, G, GC);
-    else //free lista
+    else
+    {
+        freeLista(percorso);
+        freeLista(strada);
         return;
+    }
 }
 
 void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G, t_grafoC* GC)
@@ -1042,6 +1217,8 @@ void stampaRicevuta(Utente user, t_lista* percorso, t_lista* strada, t_grafoP* G
 
     printf("\nRicevuta stampata e visibile in %s\nBuon Viaggio!", nomeFile);
 
+    freeLista(percorso);
+    freeLista(strada);
     fclose(fp);
 }
 
@@ -1061,7 +1238,8 @@ codaAttesa* caricaCoda() {
         while(!feof(fp)) {
             coda = (codaAttesa*)malloc(sizeof(codaAttesa));
 
-            fscanf(fp, "%d ", &c);
+            if(fscanf(fp, "%d ", &c)==EOF)
+                return NULL;
             for (i = 0; i < c; i++) {
                 fscanf(fp, "%s ", coda->utenti[i].username);
                 coda->utenti[i].isAdmin = 0;

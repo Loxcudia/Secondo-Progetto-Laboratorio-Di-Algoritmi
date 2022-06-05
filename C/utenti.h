@@ -51,5 +51,7 @@ void salvaCoda(codaAttesa* coda);
 codaAttesa* accodaNodo(codaAttesa* testa, codaAttesa* nodo);
 int notificaUtente(codaAttesa* coda, char* username);
 void rinominaCitta(t_grafoP* G);
+void aggiungiCitta(t_grafoP** G, t_grafoC*** GC);
+
 #endif 
 

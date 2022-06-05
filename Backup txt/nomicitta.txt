@@ -4,4 +4,3 @@ Windhelm
 Markarth
 Riften
 Dawnstar
-Winterhold

@@ -40,4 +40,4 @@ AlbergoDeiDraghi
 -2
 HotelTramonto
 AlbergoStellato
--5
+

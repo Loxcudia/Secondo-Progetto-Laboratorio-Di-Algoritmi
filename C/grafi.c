@@ -6,6 +6,16 @@
 #include "liste.h"
 #include "utenti.h"
 
+
+void freeArco(t_arcoP* e)
+{
+    if(e==NULL)
+        return;
+
+    freeArco(e->next);
+    free(e);
+}
+
 void aggiungiArcoGrafoPrincipale(t_grafoP* G, int u, int v, int costo, int distanza, int mode)
 {
 	t_arcoP* nuovo, * e;
@@ -142,7 +152,46 @@ t_grafoP* leggiGrafo()
     }
     else
 	{
-		fscanf(fileGrafo, "%d", &nv);
+        if(fscanf(fileGrafo, "%d", &nv)==EOF)
+        {
+            printf("Errore nella lettura del grafo\n");
+            printf("\nCreare un nuovo grafo?"
+                   "\n0 - Si\'"
+                   "\n1 - No\'"
+                   "\nInserire la scelta: ");
+            scanf("%d", &scelta);
+            fflush(stdin);
+            while(scelta != 0 && scelta != 1)
+            {
+                printf("\nValore non valido!"
+                       "\nCreare un nuovo grafo?"
+                       "\n0 - Si\'"
+                       "\n1 - No\'"
+                       "\nInserire la scelta: ");
+                scanf("%d", &scelta);
+                fflush(stdin);
+            }
+            if(scelta == 1)
+                exit(0);
+
+            if(scelta == 0)
+            {
+                printf("\n\nInserire il pin di amministrazione: ");
+                scanf("%d", &pin);
+
+                if(pin != 9876)
+                {
+                    printf("\nPin errato, arrivederci");
+                    exit(0);
+                }
+                else
+                {
+                    G = creaGrafoSenzaFile();
+                    return G;
+                }
+            }
+        }
+
 		G = creaGrafoPrincipale(nv);
 
 		for (i = 0; i < nv; i++)
@@ -220,7 +269,7 @@ t_grafoP* creaGrafoSenzaFile()
     int aot;
 
     printf("\nQuanti vertici avra\'(>0)?"
-           "Inserire il numero: ");
+           "\nInserire il numero: ");
     scanf("%d", &nv);
     fflush(stdin);
     while(nv<0)
@@ -236,7 +285,8 @@ t_grafoP* creaGrafoSenzaFile()
 
     for(i=0; i<nv; i++)
     {
-        printf("\nCome si chiama la citta' numero %d? ", i+1);
+        printf("\nCome si chiama la citta' numero %d? "
+               "\nInserire il nome: ", i+1);
         scanf("%s", nomeCitta);
         fflush(stdin);
 
@@ -244,7 +294,8 @@ t_grafoP* creaGrafoSenzaFile()
 
         printf("\n%s avra\' un aeroporto?"
                "\n0 - No"
-               "\n1 - Si\'", nomeCitta);
+               "\n1 - Si\'"
+               "\nInserire il valore: ", nomeCitta);
         scanf("%d", &aot);
         fflush(stdin);
 
@@ -253,7 +304,8 @@ t_grafoP* creaGrafoSenzaFile()
             printf("\nValore non valido!"
                    "\n%s avra\' un aeroporto?"
                    "\n0 - No"
-                   "\n1 - Si\'", nomeCitta);
+                   "\n1 - Si\'"
+                   "\nInserire il valore: ", nomeCitta);
             scanf("%d", &aot);
             fflush(stdin);
         }
@@ -262,7 +314,8 @@ t_grafoP* creaGrafoSenzaFile()
 
         printf("\n%s avra\' una stazione?"
                "\n0 - No"
-               "\n1 - Si\'", nomeCitta);
+               "\n1 - Si\'"
+               "\nInserire il valore: ", nomeCitta);
         scanf("%d", &aot);
         fflush(stdin);
 
@@ -271,7 +324,8 @@ t_grafoP* creaGrafoSenzaFile()
             printf("\nValore non valido!"
                    "\n%s avra\' una stazione?"
                    "\n0 - No"
-                   "\n1 - Si\'", nomeCitta);
+                   "\n1 - Si\'"
+                   "\nInserire il valore: ", nomeCitta);
             scanf("%d", &aot);
             fflush(stdin);
         }
@@ -331,19 +385,20 @@ void salvaGrafo(t_grafoP* G)
 		return;
 	}
 
-	fprintf(fileGrafo, "%d\n", G->nv);
+    fprintf(fileGrafo, "%d\n", G->nv);
 
-	for (i = 0; i < G->nv; i++)
+    for (i = 0; i < G->nv; i++)
 		fprintf(fileGrafo, "%d ", G->aereoporti[i]);
 
     fprintf(fileGrafo, "\n");
 
-	for (i = 0; i < G->nv; i++)
+    for (i = 0; i < G->nv; i++)
 		fprintf(fileGrafo, "%d ", G->stazioni[i]);
 
     fprintf(fileGrafo, "\n");
 
-	for (i = 0; i < G->nv; i++)
+
+    for (i = 0; i < G->nv; i++)
 	{
 		a = G->adjAereoporti[i];
 
@@ -356,7 +411,7 @@ void salvaGrafo(t_grafoP* G)
 	}
     fprintf(fileGrafo, "%d\n", -2);
 
-	for (i = 0; i < G->nv; i++)
+    for (i = 0; i < G->nv; i++)
 	{
 		a = G->adjStazioni[i];
 
@@ -423,12 +478,14 @@ t_grafoC* creaGrafoCitta(int n)
 		if (!G->adj)
 			printf("Impossibile allocare memoria per la lista di stazioni del grafo\n");
 		else
-		{
+        {
 			G->nv = n;
 			G->nomeAlberghi = (char**)malloc(n * sizeof(char*));
 			for (i = 0; i < n; i++)
+            {
 				G->nomeAlberghi[i] = (char*)malloc(200 * sizeof(char));
-			G->adj[i] = NULL;
+                G->adj[i] = NULL;
+            }
 		}
 	}
 	return G;
@@ -441,8 +498,25 @@ void stampaGrafoPrincipale(t_grafoP* G)
 
 	if (G)
 	{
-		printf("Il grafo ha %d vertici\n", G->nv);
-		for (i = 0; i < G->nv; i++)
+        for (i = 0; i < G->nv; i++)
+        {
+            if (G->aereoporti[i] == 0)
+                continue;
+
+            printf("Aereoporti adiacenti a %s -> ", G->nomiCitta[i]);
+            e = G->adjAereoporti[i];
+            while (e)
+            {
+                printf("%s ", G->nomiCitta[e->key]);
+                ne = ne + 1;
+                e = e->next;
+            }
+            printf("\n");
+        }
+
+        printf("\n");
+
+        for (i = 0; i < G->nv; i++)
 		{
 			if (G->stazioni[i] == 0)
 				continue;
@@ -456,29 +530,11 @@ void stampaGrafoPrincipale(t_grafoP* G)
 				e = e->next;
 			}
 			printf("\n");
-		}
-
-		printf("\n");
-
-		for (i = 0; i < G->nv; i++)
-		{
-			if (G->aereoporti[i] == 0)
-				continue;
-
-            printf("Aereoporti adiacenti a %s -> ", G->nomiCitta[i]);
-			e = G->adjAereoporti[i];
-			while (e)
-			{
-                printf("%s ", G->nomiCitta[e->key]);
-				ne = ne + 1;
-				e = e->next;
-			}
-			printf("\n");
-		}
-	}
+		}	
+    }
 }
 
-void stampaGrafoCitta(t_grafoC** G, int stampaStazioni, int nv)
+void stampaGrafoCitta(t_grafoC** GC, t_grafoP *G, int stampaStazioni, int nv)
 {
 	//se stampaStazioni è 1 stampa le stazioni, se è 0 stampa gli aereoporti, se è 2 stampa entrambi
 	int i;
@@ -486,27 +542,30 @@ void stampaGrafoCitta(t_grafoC** G, int stampaStazioni, int nv)
 
 	if (G)
 	{
-		printf("Il grafo ha %d vertici\n", nv);
-
 		for (i = 0; i < nv; i++)
-			stampaCitta(G[i]);
+            stampaCitta(GC[i], G, i);
+        printf("\n");
+
 	}
 }
 
-void stampaCitta(t_grafoC* G)
+void stampaCitta(t_grafoC* GC, t_grafoP* G, int key)
 {
 	int i;
 	t_luogo* l;
-	for (i = 0; i < G->nv; i++)
+
+    printf("\n%s: \n", G->nomiCitta[key]);
+
+    for(i = 0; i < GC->nv; i++)
 	{
-		l = G->adj[i];
+        l = GC->adj[i];
 
 		if (i == 0)
 		{
             printf("0 - Luoghi adiacenti all'aereoporto: ");
 			while (l != NULL)
 			{
-                printf("%s ", G->nomeAlberghi[l->key]);
+                printf("%s ", GC->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
@@ -518,17 +577,17 @@ void stampaCitta(t_grafoC* G)
             printf("1 - Luoghi adiacenti alla stazione: ");
 			while (l != NULL)
 			{
-                printf("%s ", G->nomeAlberghi[l->key]);
+                printf("%s ", GC->nomeAlberghi[l->key]);
 				l = l->next;
 			}
 			printf("\n");
 			continue;
 		}
 
-        printf("%d - Luoghi adiacenti a %s: ", i , G->nomeAlberghi[i]);
+        printf("%d - Luoghi adiacenti a %s: ", i , GC->nomeAlberghi[i]);
 		while (l != NULL)
 		{
-            printf("%s ", G->nomeAlberghi[l->key]);
+            printf("%s ", GC->nomeAlberghi[l->key]);
 			l = l->next;
 		}
 		printf("\n");
@@ -536,62 +595,40 @@ void stampaCitta(t_grafoC* G)
 	}
 }
 
-void rimuoviArcoStazioniGrafoPrincipale(t_grafoP* G, int u, int v)
-{
-	t_arcoP* prev;
-	t_arcoP* e;
-	e = G->adjStazioni[u];
-	if (e->key == v)
-		G->adjStazioni[u] = e->next;
-	else
-	{
-		prev = e;
-		while (prev->next->key != v)
-			prev = prev->next;
-		e = prev->next;
-		prev->next = e->next;
-	}
-}
-
-void rimuoviArcoAereoportiGrafoPrincipale(t_grafoP* G, int u, int v)
-{
-	t_arcoP* prev;
-	t_arcoP* e;
-	e = G->adjAereoporti[u];
-	if (e->key == v)
-		G->adjAereoporti[u] = e->next;
-	else
-	{
-		prev = e;
-		while (prev->next->key != v)
-			prev = prev->next;
-		e = prev->next;
-		prev->next = e->next;
-	}
-}
-
 void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v)
 {
-	t_luogo* prev;
+    t_luogo* prev, *current;
 	t_luogo* e;
-	e = G->adj[u];
+
+    e = G->adj[u];
+
+    if(e == NULL)
+        printf("\nArco assente");
+
 	if (e->key == v)
 		G->adj[u] = e->next;
 	else
 	{
-		prev = e;
-        while (prev != NULL && prev->next->key != v)
-			prev = prev->next;
-
-        if(prev == NULL)
         {
-            printf("\nArco assente");
-            return;
-        }
+            current = e;
+            prev = NULL;
 
-		e = prev->next;
-		prev->next = e->next;
-	}
+            while (current != NULL && current->key!=v) {
+                prev = current;
+                current = current->next;
+            }
+
+            if (current == NULL)
+            {
+                printf("\nArco assente");
+                return;
+            }
+
+            e = prev->next;
+            prev->next = e->next;
+        }
+        free(e);
+    }
 }
 
 
@@ -652,7 +689,10 @@ t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
         if(inserimentoInPercorso(&percorso, prec) == 0)
+        {
+            freeLista(percorso);
             return NULL;
+        }
         else
             prec = pi[prec];
     }
@@ -721,7 +761,10 @@ t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta)
         //printf("%s <- ", G->nomiCitta[prec]);
 
         if(inserimentoInPercorso(&percorso, prec) == 0)
+        {
+            freeLista(percorso);
             return NULL;
+        }
         else
             prec = pi[prec];
     }
@@ -788,7 +831,10 @@ t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
         if(inserimentoInPercorso(&percorso, prec) == 0)
+        {
+            freeLista(percorso);
             return NULL;
+        }
         else
             prec = pi[prec];
     }
@@ -855,7 +901,10 @@ t_lista* dijkstraStazioniDistanza(t_grafoP* G, int s, int meta)
     {
         //printf("%s <- ", G->nomiCitta[prec]);
         if(inserimentoInPercorso(&percorso, prec) == 0)
+        {
+            freeLista(percorso);
             return NULL;
+        }
         else
             prec = pi[prec];
     }
@@ -881,6 +930,9 @@ t_lista* dijkstraGenerico(t_grafoP* G, int s, int meta, int mode)
 	case(3):
         return dijkstraStazioniDistanza(G, s, meta);
 		break;
+
+    default:
+        return NULL;
 	}
 }
 
@@ -1114,7 +1166,7 @@ void stampaNomiCitta(t_grafoP* G, int mode)
 
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
 {
-    t_arcoP *prev, *e;
+    t_arcoP *prev, *current, *e;
 
     if(u<0 || u>G->nv-1 || v<0 || v>G->nv-1)
     {
@@ -1126,57 +1178,72 @@ void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode)
     {
         e = G->adjAereoporti[u];
 
+        if(e==NULL)
+            printf("\nArco assente");
+
         if(e->key == v)
             G->adjAereoporti[u] = e->next;
         else
         {
-            prev = e;
-			if (prev == NULL)
-			{
-				printf("\nArco assente");
-				return;
-			}
+            current = e;
+            prev = NULL;
 
-			while (prev != NULL && prev->next->key != v) {
-				prev = prev->next;
-				if (prev != NULL && prev->next == NULL) {
-					printf("\nARCO ASSENTE");
-					return;
-				}
-			}              
+            while (current != NULL) {
+                if(current->key==v)
+                    break;
+
+                prev = current;
+                current = current->next;
+            }
+
+            if (current == NULL)
+            {
+                printf("\nArco assente");
+                return;
+            }
+
+            if(prev)
 
             e = prev->next;
             prev->next = e->next;
         }
         free(e);
+        e = NULL;
     }
 
     if(mode == 1)
     {
         e = G->adjStazioni[u];
 
+        if(e==NULL)
+            printf("\nArco assente");
+
         if(e->key == v)
             G->adjStazioni[u] = e->next;
         else
         {
-            prev = e;
-			if (prev == NULL)
-			{
-				printf("\nArco assente");
-				return;
-			}
-			while (prev != NULL && prev->next->key != v) {
-				prev = prev->next;
-				if (prev == NULL) {
-					printf("\nARCO ASSENTE");
-					return;
-				}
-			}
+            current = e;
+            prev = NULL;
+
+            while (current != NULL) {
+                if(current->key==v)
+                    break;
+
+                prev = current;
+                current = current->next;
+            }
+
+            if (current == NULL)
+            {
+                printf("\nArco assente");
+                return;
+            }
 
             e = prev->next;
             prev->next = e->next;
         }
         free(e);
+        e = NULL;
     }
 }
 

@@ -38,7 +38,7 @@ typedef struct grafoCitta
 t_grafoP* creaGrafoPrincipale(int n);
 t_grafoC* creaGrafoCitta(int n);
 void stampaGrafoPrincipale(t_grafoP* G);
-void stampaGrafoCitta(t_grafoC** G, int stampaStazioni, int nv);
+void stampaGrafoCitta(t_grafoC** GC, t_grafoP *G, int stampaStazioni, int nv);
 void rimuoviArcoStazioniGrafoPrincipale(t_grafoP* G, int u, int v);
 void rimuoviArcoAereoportiGrafoPrincipale(t_grafoP* G, int u, int v);
 void rimuoviArcoGrafoCitta(t_grafoC* G, int u, int v);
@@ -53,7 +53,7 @@ t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta);
 t_lista* dijkstraStazioniDistanza(t_grafoP* G, int s, int meta);
 t_lista* dijkstraGenerico(t_grafoP* G, int s, int meta, int mode);
 t_grafoP* leggiNomiCitta(t_grafoP* G);
-void stampaCitta(t_grafoC* G);
+void stampaCitta(t_grafoC* GC, t_grafoP *G, int key);
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key);
 void rimuoviArcoGrafoPrincipale(t_grafoP* G, int u, int v, int mode);
 void stampaNomiCitta(t_grafoP* G, int mode);
@@ -64,5 +64,6 @@ void stampaPercorso(t_lista* lista, t_grafoP* G);
 t_grafoP* creaGrafoSenzaFile();
 t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G);
 void salvaNomiCitta(t_grafoP* G);
+void freeArco(t_arcoP* e);
 
 #endif // GRAFI_H

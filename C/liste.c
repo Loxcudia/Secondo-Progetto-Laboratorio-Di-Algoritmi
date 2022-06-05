@@ -5,6 +5,15 @@
 #include "grafi.h"
 #include "liste.h"
 
+void freeLista(t_lista* lista)
+{
+    if(lista == NULL)
+        return;
+
+    freeLista(lista->next);
+    free(lista);
+}
+
 void inserimentoInTesta(t_lista** L, int data)
 {
 	t_lista* tmp = NULL;
