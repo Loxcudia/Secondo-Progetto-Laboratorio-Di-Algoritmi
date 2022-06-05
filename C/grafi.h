@@ -63,5 +63,6 @@ void stampaLista(t_lista* lista, t_grafoC* GC);
 void stampaPercorso(t_lista* lista, t_grafoP* G);
 t_grafoP* creaGrafoSenzaFile();
 t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G);
+void salvaNomiCitta(t_grafoP* G);
 
 #endif // GRAFI_H

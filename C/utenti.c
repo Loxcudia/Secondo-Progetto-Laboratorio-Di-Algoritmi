@@ -241,11 +241,12 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                "\n7 - Modifica struttura citta"
                "\n8 - Attiva/disattiva aeroporto"
                "\n9 - Attiva/disattiva stazione"
-               "\n10 - Logout\n\nInserire il valore: ");
+               "\n10 - Rinomina una citta\'"
+               "\n11 - Logout\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
 
-        while (scelta < 0 || scelta > 10) {
+        while (scelta < 0 || scelta > 11) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -295,11 +296,45 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                 toggleStazione(G);
                 break;
             case 10:
+                system("cls||clear");
+                rinominaCitta(G);
+                break;
+            case 11:
 				system("cls||clear");
 				printf("Arrivederci, %s :'(\n", user.username);
 				return;
 		}
 	}   
+}
+
+void rinominaCitta(t_grafoP* G)
+{
+    int i;
+    int citta;
+    char nomeCitta[20];
+
+    for(i=0;i<G->nv;i++)
+        printf("%d - %s", i, G->nomiCitta[i]);
+
+    printf("\nQuale citta\' vuoi rinominare?"
+           "\nInserire l\'indice: ");
+    scanf("%d", &citta);
+    fflush(stdin);
+
+    if(citta<0 || citta > G->nv-1)
+    {
+        printf("\nIndice non valido");
+        return;
+    }
+
+    printf("\nInserire il nuovo nome di %s: ", G->nomiCitta[citta]);
+    scanf("%s", nomeCitta);
+    fflush(stdin);
+
+    strcpy(G->nomiCitta[citta], nomeCitta);
+
+    salvaNomiCitta(G);
+    return;
 }
 
 void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)

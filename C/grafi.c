@@ -279,7 +279,22 @@ t_grafoP* creaGrafoSenzaFile()
         G->stazioni[i] = aot;
     }
 
+    salvaGrafo(G);
+    salvaNomiCitta(G);
     return G;
+}
+
+void salvaNomiCitta(t_grafoP* G)
+{
+    FILE *fp;
+    int i;
+
+    fp = fopen("nomicitta.txt", "w");
+
+    for(i=0; i<G->nv; i++)
+        fprintf(fp, "%s\n", G->nomiCitta[i]);
+
+    fclose(fp);
 }
 
 t_grafoP* leggiNomiCitta(t_grafoP* G)
@@ -1022,6 +1037,7 @@ t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G)
             strcpy(GC[i]->nomeAlberghi[j], nomeAlbergo);
         }
     }
+    salvaGrafoCitta(GC, G->nv);
     return GC;
 }
 
