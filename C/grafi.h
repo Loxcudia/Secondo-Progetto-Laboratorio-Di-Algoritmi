@@ -46,7 +46,7 @@ void aggiungiArcoGrafoPrincipale(t_grafoP* G, int u, int v, int costo, int dista
 t_grafoP* leggiGrafo();
 void salvaGrafo(t_grafoP* G);
 void salvaGrafoCitta(t_grafoC** C, int);
-t_grafoC** leggiGrafoCitta(int nv);
+t_grafoC** leggiGrafoCitta(t_grafoP* G);
 t_lista* dijkstraAereoportiCosto(t_grafoP* G, int s, int meta);
 t_lista* dijkstraAereoportiDistanza(t_grafoP* G, int s, int meta);
 t_lista* dijkstraStazioniCosto(t_grafoP* G, int s, int meta);
@@ -61,6 +61,7 @@ void stampaAlberghi(t_grafoC* GC);
 t_lista* dijkstraAlberghi(t_grafoC* GC, int mode, int albergo);
 void stampaLista(t_lista* lista, t_grafoC* GC);
 void stampaPercorso(t_lista* lista, t_grafoP* G);
-
+t_grafoP* creaGrafoSenzaFile();
+t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G);
 
 #endif // GRAFI_H

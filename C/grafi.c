@@ -95,12 +95,52 @@ t_grafoP* leggiGrafo()
 	int i = 0;
 	int presenza;
 	int v, costo, distanza;
+    int scelta;
+    int pin;
 
 	fileGrafo = fopen("grafo.txt", "r");
 
 	if (fileGrafo == NULL)
+    {
 		printf("Errore nella lettura del grafo\n");
-	else
+        printf("\nCreare un nuovo grafo?"
+               "\n0 - Si\'"
+               "\n1 - No\'"
+               "\nInserire la scelta: ");
+        scanf("%d", &scelta);
+        fflush(stdin);
+        while(scelta != 0 && scelta != 1)
+        {
+            printf("\nValore non valido!"
+                   "\nCreare un nuovo grafo?"
+                   "\n0 - Si\'"
+                   "\n1 - No\'"
+                   "\nInserire la scelta: ");
+            scanf("%d", &scelta);
+            fflush(stdin);
+        }
+        if(scelta == 1)
+            exit(0);
+
+        if(scelta == 0)
+        {
+            printf("\n\nInserire il pin di amministrazione: ");
+            scanf("%d", &pin);
+
+            if(pin != 9876)
+            {
+                printf("\nPin errato, arrivederci");
+                exit(0);
+            }
+            else
+            {
+                G = creaGrafoSenzaFile();
+                return G;
+            }
+        }
+
+    }
+    else
 	{
 		fscanf(fileGrafo, "%d", &nv);
 		G = creaGrafoPrincipale(nv);
@@ -166,9 +206,80 @@ t_grafoP* leggiGrafo()
 	fclose(fileGrafo);
 
 	G = leggiNomiCitta(G);
-	
 
 	return G;
+}
+
+t_grafoP* creaGrafoSenzaFile()
+{
+    int nv;
+    char nomeCitta[20];
+    int u, v;
+    int i, j;
+    t_grafoP* G = NULL;
+    int aot;
+
+    printf("\nQuanti vertici avra\'(>0)?"
+           "Inserire il numero: ");
+    scanf("%d", &nv);
+    fflush(stdin);
+    while(nv<0)
+    {
+        printf("\nValore non valido!"
+               "\nQuanti vertici avra\'(>0)?"
+               "Inserire il numero: ");
+        scanf("%d", &nv);
+        fflush(stdin);
+    }
+
+    G = creaGrafoPrincipale(nv);
+
+    for(i=0; i<nv; i++)
+    {
+        printf("\nCome si chiama la citta' numero %d? ", i+1);
+        scanf("%s", nomeCitta);
+        fflush(stdin);
+
+        strcpy(G->nomiCitta[i], nomeCitta);
+
+        printf("\n%s avra\' un aeroporto?"
+               "\n0 - No"
+               "\n1 - Si\'", nomeCitta);
+        scanf("%d", &aot);
+        fflush(stdin);
+
+        while(aot!=0 && aot!=1)
+        {
+            printf("\nValore non valido!"
+                   "\n%s avra\' un aeroporto?"
+                   "\n0 - No"
+                   "\n1 - Si\'", nomeCitta);
+            scanf("%d", &aot);
+            fflush(stdin);
+        }
+
+        G->aereoporti[i] = aot;
+
+        printf("\n%s avra\' una stazione?"
+               "\n0 - No"
+               "\n1 - Si\'", nomeCitta);
+        scanf("%d", &aot);
+        fflush(stdin);
+
+        while(aot!=0 && aot!=1)
+        {
+            printf("\nValore non valido!"
+                   "\n%s avra\' una stazione?"
+                   "\n0 - No"
+                   "\n1 - Si\'", nomeCitta);
+            scanf("%d", &aot);
+            fflush(stdin);
+        }
+
+        G->stazioni[i] = aot;
+    }
+
+    return G;
 }
 
 t_grafoP* leggiNomiCitta(t_grafoP* G)
@@ -790,17 +901,19 @@ void salvaGrafoCitta(t_grafoC** C, int nv) {
 	fclose(fp);
 }
 
-t_grafoC** leggiGrafoCitta(int nv) 
+t_grafoC** leggiGrafoCitta(t_grafoP* G)
 {
 	FILE* fp;
     int key, i, j, k, verticiCitta;
 	char nomealbergo[20];
 	t_grafoC** GC = NULL;
 	t_luogo* arcoLuogo = NULL;
+    int scelta;
+    int pin;
 
-	GC = (t_grafoC**)malloc(sizeof(t_grafoC*) * nv);
+    GC = (t_grafoC**)malloc(sizeof(t_grafoC*) * G->nv);
 
-	for (i = 0; i < nv; i++)
+    for (i = 0; i < G->nv; i++)
 	{
 		GC[i] = NULL;
 	}
@@ -808,10 +921,44 @@ t_grafoC** leggiGrafoCitta(int nv)
 	fp = fopen("citta.txt", "r");
 	if (!fp) {
 		printf("Il file non esiste!");
-		return NULL;
+        printf("\nCreare un nuovo grafo?"
+                "\n0 - Si\'"
+                "\n1 - No\'"
+                "\nInserire la scelta: ");
+        scanf("%d", &scelta);
+        fflush(stdin);
+        while(scelta != 0 && scelta != 1)
+        {
+            printf("\nValore non valido!"
+            "\nCreare un nuovo grafo?"
+            "\n0 - Si\'"
+            "\n1 - No\'"
+            "\nInserire la scelta: ");
+            scanf("%d", &scelta);
+            fflush(stdin);
+        }
+        if(scelta == 1)
+            exit(0);
+
+        if(scelta == 0)
+        {
+            printf("\n\nInserire il pin di amministrazione: ");
+            scanf("%d", &pin);
+            if(pin != 9876)
+            {
+                printf("\nPin errato, arrivederci");
+                exit(0);
+            }
+            else
+            {
+                GC = creaGrafoCittaSenzaFile(GC, G);
+                return GC;
+            }
+        }
+
 	}
 
-	for (i = 0; i < nv; i++)
+    for (i = 0; i < G->nv; i++)
     {
         verticiCitta = 4;
 
@@ -858,6 +1005,24 @@ t_grafoC** leggiGrafoCitta(int nv)
 	fclose(fp);
 
 	return GC;
+}
+
+t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G)
+{
+    int i, j;
+    char nomeAlbergo[20];
+
+    for(i=0; i<G->nv; i++)
+    {
+        for(j=2; j<4; j++)
+        {
+            printf("\nInserire il nome dell'albergo numero %d di %s", j-1, G->nomiCitta[i]);
+            scanf("%s", nomeAlbergo);
+            fflush(stdin);
+            strcpy(GC[i]->nomeAlberghi[j], nomeAlbergo);
+        }
+    }
+    return GC;
 }
 
 void aggiungiArcoGrafoCitta(t_grafoC* G, int i, int key)

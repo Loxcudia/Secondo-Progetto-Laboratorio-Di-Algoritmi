@@ -15,7 +15,7 @@ int main()
     system("cls||clear");
 	codaAttesa* codaUtenti = caricaCoda();
 	G = leggiGrafo();
-	GC = leggiGrafoCitta(G->nv);
+    GC = leggiGrafoCitta(G);
 	//stampaGrafoCitta(GC, 2, G->nv);
 
 	printf("\n******************* PROGETTO LASD 2 *******************\n\nClaudio Simonelli\nClaudio Riccio\nGiorgio Longobardo\n\n\n\n");
