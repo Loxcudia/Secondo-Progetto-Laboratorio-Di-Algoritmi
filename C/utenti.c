@@ -239,6 +239,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                                     continue;
                                 rimuoviArcoGrafoPrincipale(G, i, tmp->keyArrivo, 0);
                             }
+                            G->aereoporti[tmp->keyArrivo] = 0;
                             salvaGrafo(G);
                             printf("\nFinisco");
                             nodoDaEliminare = tmp;
@@ -258,7 +259,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                                     continue;
                                 rimuoviArcoGrafoPrincipale(G, i, tmp->keyArrivo, 1);
                             }
-
+                            G->stazioni[tmp->keyArrivo] = 0;
                             salvaGrafo(G);
                             printf("\nFinisco");
                             nodoDaEliminare = tmp;
@@ -294,7 +295,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                "\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno"
                "\n4 - Mostra mete in attesa"
                "\n5 - Aggiungi arco\n6 - Rimuovi arco "
-               "\n7 - Modifica struttura citta"
+               "\n7 - Modifica citta\'"
                "\n8 - Attiva/disattiva aeroporto"
                "\n9 - Attiva/disattiva stazione"
                "\n10 - Rinomina una citta\'"
@@ -359,7 +360,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                 break;
             case 11:
                 system("cls||clear");
-              //  aggiungiCitta(&G, &GC);
+                aggiungiCitta(&G, &GC);
                 break;
             case 12:
 				system("cls||clear");
@@ -377,6 +378,7 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
     t_arcoP** tmpAdjtreni;
     int* tmpAerei;
     int* tmpTreni;
+    t_grafoC **tmpGC;
     int i, a, t;
     char** tmpNomi;
 
@@ -397,11 +399,16 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
 
     (*G)->nv = (*G)->nv+1;
 
-    tmpNomi = (char**)realloc((*G)->nomiCitta, (*G)->nv);
-    (*G)->nomiCitta = tmpNomi;
-    (*G)->nomiCitta[(*G)->nv-1] = (char*)malloc(200*sizeof(char));
+    tmpNomi = (char**)calloc((*G)->nv, sizeof(char*));
+    for(i=0; i<(*G)->nv-1;i++)
+    {
+        tmpNomi[i] = (char*)calloc(20, sizeof(char));
+        strcpy(tmpNomi[i], (*G)->nomiCitta[i]);
+    }
+    tmpNomi[(*G)->nv-1] = (char*)calloc(20, sizeof(char));
 
-    strcpy((*G)->nomiCitta[(*G)->nv-1], nomeCitta);
+    strcpy(tmpNomi[(*G)->nv-1], nomeCitta);
+    (*G)->nomiCitta = tmpNomi;
 
     tmpAerei = (int*)realloc((*G)->aereoporti, (*G)->nv);
     (*G)->aereoporti = tmpAerei;
@@ -432,6 +439,7 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
            "\nInserire la scelta: ", nomeCitta);
     scanf("%d", &t);
     fflush(stdin);
+
     while(t!=0 && t!=1)
     {
         printf("\nValore non valido!"
@@ -446,20 +454,32 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
     (*G)->aereoporti[(*G)->nv-1] = a;
     (*G)->stazioni[(*G)->nv-1] = t;
 
-    tmpAdjaerei = (t_arcoP**)realloc((*G)->adjAereoporti, (*G)->nv);
+    tmpAdjaerei = (t_arcoP**)calloc((*G)->nv, sizeof(t_arcoP*));
+    tmpAdjtreni= (t_arcoP**)calloc((*G)->nv, sizeof(t_arcoP*));
+
+    for(i=0; i<(*G)->nv-1;i++)
+    {
+        tmpAdjaerei[i] = (*G)->adjAereoporti[i];
+        tmpAdjtreni[i] = (*G)->adjStazioni[i];
+    }
+    tmpAdjaerei[(*G)->nv-1] = NULL;
+    tmpAdjtreni[(*G)->nv-1] = NULL;
+
     (*G)->adjAereoporti = tmpAdjaerei;
-    tmpAdjtreni = (t_arcoP**)realloc((*G)->adjStazioni, (*G)->nv);
-    tmpAdjtreni = (t_arcoP**)realloc((*G)->adjStazioni, (*G)->nv);
+    (*G)->adjStazioni = tmpAdjtreni;
 
-    (*G)->adjAereoporti[(*G)->nv-1] = NULL;
-    (*G)->adjStazioni[(*G)->nv-1] = NULL;
 
-    *GC = (t_grafoC**)realloc(*GC, (*G)->nv-1);
+    tmpGC = (t_grafoC**)calloc((*G)->nv, sizeof(t_grafoC*));
 
-    (*GC)[(*G)->nv-1] = creaGrafoCitta(4);
+    for(i=0; i<(*G)->nv-1;i++)
+    {
+        tmpGC[i] = (*GC)[i];
+    }
 
-    strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[0], "Aeroporto");
-    strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[1], "Stazione");
+    tmpGC[(*G)->nv-1] = creaGrafoCitta(4);
+
+    strcpy(tmpGC[(*G)->nv-1]->nomeAlberghi[0], "Aeroporto");
+    strcpy(tmpGC[(*G)->nv-1]->nomeAlberghi[1], "Stazione");
 
     for(i=2; i<4; i++)
     {
@@ -467,12 +487,14 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
                "\nInserire il nome: ", i-1, nomeCitta);
         scanf("%s", nomeAlbergo);
         fflush(stdin);
-        strcpy((*GC)[(*G)->nv-1]->nomeAlberghi[i], nomeAlbergo);
-        printf("%s\n", (*GC)[(*G)->nv-1]->nomeAlberghi[i]);
+        strcpy(tmpGC[(*G)->nv-1]->nomeAlberghi[i], nomeAlbergo);
+        printf("%s\n", tmpGC[(*G)->nv-1]->nomeAlberghi[i]);
     }
+    *GC = tmpGC;
 
-      salvaGrafo(*G);
-//    salvaGrafoCitta(*GC, (*G)->nv);
+    salvaNomiCitta(*G);
+    salvaGrafo(*G);
+    salvaGrafoCitta(*GC, (*G)->nv);
 }
 
 void rinominaCitta(t_grafoP* G)
@@ -511,6 +533,8 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)
     int key = -1;
     int scelta;
     int u, v;
+    int albergo;
+    char nomeAlbergo[200];
 
     while(1)
     {
@@ -532,7 +556,8 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)
         printf("\n0 - Visualizza citta\'"
                "\n1 - Aggiungi arco"
                "\n2 - Rimuovi arco"
-               "\n3 - Esci"
+               "\n3 - Modifica nome albergo"
+               "\n4 - Esci"
                "\nInserire la scelta: ");
         scanf("%d", &scelta);
         fflush(stdin);
@@ -583,8 +608,28 @@ void modificaCittaMenu(t_grafoP* G, t_grafoC **GC)
                     salvaGrafoCitta(GC, G->nv);
                 }
                 break;
-            case(3):
+            case 3:
+                system("cls||clear");
+                for(i=2;i<4; i++)
+                    printf("\n%d - %s\n", i-1, GC[key]->nomeAlberghi[i]);
+                printf("\nInserire l\'indice dell\'albergo da modificare: ");
+                scanf("%d", &albergo);
+                fflush(stdin);
+                if(albergo!=1 && albergo!=2)
+                    printf("\nValore invalido");
+                else
+                {
+                    printf("\nInserire il nuovo nome di %s: ", GC[key]->nomeAlberghi[albergo+1]);
+                    scanf("%s", nomeAlbergo);
+                    strcpy(GC[key]->nomeAlberghi[albergo+1], nomeAlbergo);
+                    salvaGrafoCitta(GC, G->nv);
+                }
+                break;
+            case(4):
                 return;
+            default:
+                printf("\nValore non valido!\n");
+                break;
         }
 
     }

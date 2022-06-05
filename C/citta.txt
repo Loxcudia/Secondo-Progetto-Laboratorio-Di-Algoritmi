@@ -40,4 +40,11 @@ AlbergoDeiDraghi
 -2
 HotelTramonto
 AlbergoStellato
-
+-1
+-1
+-1
+-1
+-2
+WinterBay
+AlbergoNevoso
+-5
