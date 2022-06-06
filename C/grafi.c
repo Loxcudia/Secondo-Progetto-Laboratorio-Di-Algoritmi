@@ -272,11 +272,11 @@ t_grafoP* creaGrafoSenzaFile()
            "\nInserire il numero: ");
     scanf("%d", &nv);
     fflush(stdin);
-    while(nv<0)
+    while(nv<=0)
     {
         printf("\nValore non valido!"
                "\nQuanti vertici avra\'(>0)?"
-               "Inserire il numero: ");
+               "\nInserire il numero: ");
         scanf("%d", &nv);
         fflush(stdin);
     }
@@ -987,7 +987,7 @@ t_grafoC** leggiGrafoCitta(t_grafoP* G)
 
 	fp = fopen("citta.txt", "r");
 	if (!fp) {
-		printf("Il file non esiste!");
+        printf("\nIl file dei grafi delle citta\' non esiste!");
         printf("\nCreare un nuovo grafo?"
                 "\n0 - Si\'"
                 "\n1 - No\'"
@@ -1081,9 +1081,29 @@ t_grafoC** creaGrafoCittaSenzaFile(t_grafoC** GC, t_grafoP* G)
 
     for(i=0; i<G->nv; i++)
     {
-        for(j=2; j<4; j++)
+        GC[i] = (t_grafoC*)malloc(sizeof(t_grafoC));
+        GC[i]->nv = 4;
+        GC[i]->adj = (t_luogo**)malloc(GC[i]->nv*sizeof(t_luogo*));
+        GC[i]->nomeAlberghi = (char**)malloc(GC[i]->nv*sizeof(char*));
+
+        for(j=0; j<4; j++)
         {
-            printf("\nInserire il nome dell'albergo numero %d di %s", j-1, G->nomiCitta[i]);
+            GC[i]->adj[j] = NULL;
+            GC[i]->nomeAlberghi[j] = (char*)malloc(200*sizeof(char));
+
+            if(j==0)
+            {
+                strcpy(GC[i]->nomeAlberghi[j], "Aeroporto");
+                continue;
+            }
+
+            if(j==1)
+            {
+                strcpy(GC[i]->nomeAlberghi[j], "Stazione");
+                continue;
+            }
+
+            printf("\nInserire il nome dell'albergo numero %d di %s: ", j-1, G->nomiCitta[i]);
             scanf("%s", nomeAlbergo);
             fflush(stdin);
             strcpy(GC[i]->nomeAlberghi[j], nomeAlbergo);

@@ -35,7 +35,7 @@ void menuUtente(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti)
 void menuAdmin(Utente user, t_grafoP* G, t_grafoC **GC, codaAttesa *codaUtenti);  //mostra menu Admin
 void aggiungiArcoMenu(t_grafoP *G); //menu per l'aggiunta di un arco al grafo principale
 void rimuoviArcoMenu(t_grafoP *G); //menu per la rimozione di un arco
-void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
+void inserisciCodaAttesa(codaAttesa **codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
 codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo);
 void mostraCodaAttesa(codaAttesa* codaUtente);
 void prenotaViaggio(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUtenti);

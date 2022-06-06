@@ -86,6 +86,12 @@ Utente loginUtente() {
 
 		f = fopen("utenti.txt", "r");
 
+        if(f==NULL)
+        {
+            printf("\nNon ci sono utenti registrati, registrarsi\n");
+            exit(0);
+        }
+
 		while (s && !feof(f)) {
             fscanf(f, "%s %s %d %lf\n", user.username, user.password, &user.isAdmin, &user.saldo);
 
@@ -117,15 +123,22 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
     int i;
 
     system("cls||clear");
-	printf("***************** MENU UTENTE *****************\n\nCiao, %s \nSaldo attuale: %.2f", user.username, user.saldo);
+    printf("***************** MENU UTENTE *****************\n\nCiao, %s", user.username);
     if (notificaUtente(codaUtenti, user.username)) 
         printf("Una delle tue mete in attesa e' diventata disponibile!");
     
 	while (1) {
-        printf("\nOpzioni possibili:\n\n0 - Mostra tutte le mete possibili\n1 - Prenota un viaggio\n2 - Logout\n\nInserire il valore: ");
+        printf("\nOpzioni possibili:"
+               "\n"
+               "\n0 - Mostra tutte le mete possibili"
+               "\n1 - Mostra il grafo"
+               "\n2 - Prenota un viaggio"
+               "\n3 - Logout"
+               "\n"
+               "\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
-        while (scelta != 0 && scelta != 1 && scelta != 2) {
+        while (scelta != 0 && scelta != 1 && scelta != 2 && scelta!=3) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -142,11 +155,15 @@ void menuUtente(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa *codaUtenti)
                 printf("\n");
                 break;
 
-            case 1:
+            case(1):
+                system("cls||clear");
+                stampaGrafoPrincipale(G);
+                break;
+            case 2:
                 prenotaViaggio(user, G, GC, codaUtenti);
                 break;
 
-            case 2:
+            case 3:
                 printf("Arrivederci, %s :'(\n", user.username);
                 return;
 
@@ -165,7 +182,12 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
 
     system("cls||clear");
 
-	printf("Quale menu vuoi visualizzare?\n\n0 - Menu Admin \n1 - Menu Utente\n\nInserisci valore: ");
+    printf("Quale menu vuoi visualizzare?"
+           "\n"
+           "\n0 - Menu Admin "
+           "\n1 - Menu Utente"
+           "\n"
+           "\nInserisci valore: ");
 	fflush(stdin);
 	scanf("%d", &scelta);
 
@@ -182,6 +204,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
     if (NOTIFICA_ADMIN == 1)
     {
         int x;
+        system("cls||clear");
         printf("\n\nNotifica urgente: ci sono degli utenti in coda d'attesa per delle mete non raggiungibili. Le seguenti mete sono:\n\n");
         mostraCodaAttesa(codaUtenti);
         printf("\nVuoi renderle disponibili/eliminarle o vuoi occupartene in un altro momento?"
@@ -204,7 +227,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                         printf(" con aereo\n");
                     else
                         printf(" con treno\n");
-                    printf("Vuoi renderla disponibile la meta, rimuoverla o rifiutare la richiesta?"
+                    printf("\nVuoi renderla disponibile la meta, rimuoverla o rifiutare la richiesta?\n"
                            "\n0 - Renderla Disponibile"
                            "\n1 - Eliminarla"
                            "\n2 - Rifiuta la richiesta"
@@ -213,11 +236,12 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                     if (y == 0)
                     {
                         printf("\nOK, hai scelto di renderla disponibile. Ora:\n");
-                        printf("Inserisci il costo:\n");
+                        printf("\nInserisci il costo: ");
                         scanf("%d", &c);
-                        printf("Inserisci la distanza: \n");
+                        printf("\nInserisci la distanza: ");
                         scanf("%d", &d);
                         aggiungiArcoGrafoPrincipale(G, tmp->keyPartenza, tmp->keyArrivo, c, d, tmp->aot);
+                        aggiungiArcoGrafoPrincipale(G, tmp->keyArrivo, tmp->keyPartenza, c, d, tmp->aot);
                         salvaGrafo(G);
                         nodoDaEliminare = tmp;
                         tmp = tmp->next;
@@ -278,6 +302,7 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                         printf("Rimossa\n");
                     }
                 }
+                codaUtenti = NULL;
             }
             FILE *fp = fopen("coda.txt", "w");
             fclose(fp);
@@ -292,20 +317,20 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
         printf("\nOpzioni possibili:\n"
                "\n0 - Mostra tutti i viaggi possibili"
                "\n1 - Mostra tutte le citta' disponibili"
-               "\n2 - Mostra viaggi in aereo\n3 - Mostra viaggi in treno"
-               "\n4 - Mostra mete in attesa"
-               "\n5 - Aggiungi arco\n6 - Rimuovi arco "
-               "\n7 - Modifica citta\'"
-               "\n8 - Attiva/disattiva aeroporto"
-               "\n9 - Attiva/disattiva stazione"
-               "\n10 - Rinomina una citta\'"
-               "\n11 - Aggiungi una citta\'"
-               "\n12 - Logout"
+               "\n2 - Mostra mete in attesa"
+               "\n3 - Aggiungi arco"
+               "\n4 - Rimuovi arco "
+               "\n5 - Modifica citta\'"
+               "\n6 - Attiva/disattiva aeroporto"
+               "\n7 - Attiva/disattiva stazione"
+               "\n8 - Rinomina una citta\'"
+               "\n9 - Aggiungi una citta\'"
+               "\n10 - Logout"
                "\n\nInserire il valore: ");
 		fflush(stdin);
 		scanf("%d", &scelta);
 
-        while (scelta < 0 || scelta > 12) {
+        while (scelta < 0 || scelta > 10) {
 			printf("Valore inserito non valido! Inserire il valore: ");
 			fflush(stdin);
 			scanf("%d", &scelta);
@@ -322,47 +347,39 @@ void menuAdmin(Utente user, t_grafoP* G, t_grafoC** GC, codaAttesa* codaUtenti) 
                 printf("Mostro tutte le citta' disponibili: \n");
                 stampaGrafoCitta(GC, G, 2, G->nv);
 				break;
-			case 2:
-				system("cls||clear");
-				printf("il numero e' due\n");
-				break;
-			case 3:
-				system("cls||clear");
-				printf("il numero e' tre\n");
-				break;
-			case 4:
+            case 2:
 				system("cls||clear");
                 mostraCodaAttesa(codaUtenti);
 				break;
-			case 5:
+            case 3:
 				system("cls||clear");
 				aggiungiArcoMenu(G);
 				break;
-			case 6:
+            case 4:
 				system("cls||clear");
 				rimuoviArcoMenu(G);
 				break;
-            case 7:
+            case 5:
                 system("cls||clear");
                 modificaCittaMenu(G, GC);
                 break;
-            case 8:
+            case 6:
                 system("cls||clear");
                 toggleAeroporto(G);
                 break;
-            case 9:
+            case 7:
                 system("cls||clear");
                 toggleStazione(G);
                 break;
-            case 10:
+            case 8:
                 system("cls||clear");
                 rinominaCitta(G);
                 break;
-            case 11:
+            case 9:
                 system("cls||clear");
                 aggiungiCitta(&G, &GC);
                 break;
-            case 12:
+            case 10:
 				system("cls||clear");
 				printf("Arrivederci, %s :'(\n", user.username);
 				return;
@@ -488,7 +505,6 @@ void aggiungiCitta(t_grafoP** G, t_grafoC*** GC)
         scanf("%s", nomeAlbergo);
         fflush(stdin);
         strcpy(tmpGC[(*G)->nv-1]->nomeAlberghi[i], nomeAlbergo);
-        printf("%s\n", tmpGC[(*G)->nv-1]->nomeAlberghi[i]);
     }
     *GC = tmpGC;
 
@@ -912,15 +928,15 @@ void aggiungiArcoMenu(t_grafoP* G)
 }
 
 
-void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo) {
-	if (codaUtente == NULL) {
-		codaUtente = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
-        
+void inserisciCodaAttesa(codaAttesa **codaUtente, Utente user, char* partenza, char* destinazione, int aot, int keyPartenza, int keyArrivo) {
+    if (*codaUtente == NULL) {
+        *codaUtente = inserisciNodoCodaAttesa(*codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
+        salvaCoda(*codaUtente);
 	}
 		
 	else {
 		int flag = 0;
-		codaAttesa* p = codaUtente;
+        codaAttesa* p = *codaUtente;
 		while (p != NULL) {
 			if (!strcmp(partenza, p->cittaPartenza) && !strcmp(destinazione, p->cittaArrivo)) {
 				for (int i = 0; i < 100; i++) {
@@ -933,10 +949,10 @@ void inserisciCodaAttesa(codaAttesa *codaUtente, Utente user, char* partenza, ch
 			}
 			p = p->next;
 		}
-		p = codaUtente;
+        p = *codaUtente;
 		while (flag == 0 && p != NULL) {
 			if (p->next == NULL) {
-				p->next = inserisciNodoCodaAttesa(codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
+                p->next = inserisciNodoCodaAttesa(*codaUtente, user, partenza, destinazione, aot, keyPartenza, keyArrivo);
                 salvaCoda(p->next);
 				flag = 1;
 			}
@@ -962,12 +978,13 @@ codaAttesa* inserisciNodoCodaAttesa(codaAttesa* codaUtente, Utente user, char* p
 	strcpy(coda->cittaArrivo, destinazione);
 	strcpy(coda->cittaPartenza, partenza);
 	coda->aot = aot;
-	return coda;
+
+    return coda;
 }
 
 void mostraCodaAttesa(codaAttesa* codaUtente) {
 	if (codaUtente == NULL) {
-		printf("Nessuna meta presente nella coda.");
+        printf("\nNessuna meta presente nella coda.\n");
 		return;
 	}
 
@@ -1042,13 +1059,12 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
             keyArrivo = i;
     }
 
-    if(keyPartenza == -1)
+    if(keyPartenza == -1 || keyArrivo == -1)
     {
-        printf("Citta di partenza\' inserita non valida\n");
+        printf("Citta\' inserite non valide\n");
         return;
     }
 
-    //inserire aggiunta della meta
 
     printf("\n0 - Viaggio economico\n1 - Viaggio breve\nInserire la scelta: ");
     scanf("%d", &mode);
@@ -1070,13 +1086,15 @@ void viaggioInAereo(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
     if(percorso == NULL)
     {
         int x;
-        printf("\nMeta non raggiungibile.\n0 - Non inserirti in una coda di attesa\n1 - Inserisciti in una coda di attesa\nInserisci la scelta: ");
+        printf("\nMeta non raggiungibile."
+               "\n0 - Non inserirti in una coda di attesa"
+               "\n1 - Inserisciti in una coda di attesa\nInserisci la scelta: ");
         scanf("%d", &x);
         if (x == 1)
         {
             NOTIFICA_ADMIN = 1;
-            inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
-            printf("Aggiunto!\n");
+            inserisciCodaAttesa(&codaUtenti, user, arrivo, partenza, 0, keyPartenza, keyArrivo);
+            printf("Aggiunto!\n\n");
             mostraCodaAttesa(codaUtenti);
         }
         else
@@ -1115,9 +1133,9 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
             keyArrivo = i;
     }
 
-    if(keyPartenza == -1)
+    if(keyPartenza == -1 || keyArrivo == -1)
     {
-        printf("Citta di partenza\' inserita non valida\n");
+        printf("Citta inserite non valide\n");
         return;
     }
 
@@ -1146,7 +1164,7 @@ void viaggioInTreno(Utente user, t_grafoP *G, t_grafoC **GC, codaAttesa *codaUte
         if (x == 1)
         {
             NOTIFICA_ADMIN = 1;
-            inserisciCodaAttesa(codaUtenti, user, arrivo, partenza, 1, keyPartenza, keyArrivo);
+            inserisciCodaAttesa(&codaUtenti, user, arrivo, partenza, 1, keyPartenza, keyArrivo);
             printf("Aggiunto!\n");
         }
         else
